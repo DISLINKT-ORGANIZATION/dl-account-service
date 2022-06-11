@@ -1,0 +1,24 @@
+name: Actions on main branch
+on: 
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    branches:    
+      - 'main'
+
+jobs:
+  checks:
+    name: Check PR
+    runs-on: ubuntu-latest
+    env:
+      PR_BRANCH: ${{github.event.pull_request.head.ref}}
+      DEVELOP_BRANCH: develop
+    steps:
+      - name: not_develop
+        if: ${{ env.DEVELOP_BRANCH != env.PR_BRANCH }}
+        run: exit 1
+      - name: develop
+        if: ${{ env.DEVELOP_BRANCH == env.PR_BRANCH }}
+        run: echo "ok"
