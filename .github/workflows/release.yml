@@ -49,7 +49,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build with Maven
-        run: mvn package
+        run: mvn package -DskipTests
 
       - name: Set Up QEMU
         uses: docker/setup-qemu-action@v2
