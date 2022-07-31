@@ -73,7 +73,7 @@ jobs:
           secrets: |
             GIT_AUTH_TOKEN = ${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
-          tags: ${{ secrets.DOCKER_USERNAME }}/new-test:${{ steps.clean_version.outputs._1 }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/dl-account-service:${{ steps.clean_version.outputs._1 }}
           load: true
 
       - name: Docker push
@@ -84,15 +84,15 @@ jobs:
           push: true
           secrets: |
             GIT_AUTH_TOKEN = ${{ secrets.GITHUB_TOKEN }}
-          tags: ${{ secrets.DOCKER_USERNAME }}/new-test:${{ steps.clean_version.outputs._1 }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/dl-account-service:${{ steps.clean_version.outputs._1 }}
 
       - name: Upload image
         uses: ishworkh/docker-image-artifact-upload@v1
         with:
-          image: ${{ secrets.DOCKER_USERNAME }}/new-test:${{ steps.clean_version.outputs._1 }}
+          image: ${{ secrets.DOCKER_USERNAME }}/dl-account-service:${{ steps.clean_version.outputs._1 }}
 
       - name: Upload Jar Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: build-${{ steps.clean_version.outputs._1 }}.jar
+          name: dl-account-build-${{ steps.clean_version.outputs._1 }}.jar
           path: target/*.jar
