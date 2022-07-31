@@ -1,0 +1,43 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop]
+  workflow_call:
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+      DOCKER_PASSWORD:
+        required: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: git checkout HEAD^
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+
+      - name: Commit Lint
+        uses: wagoid/commitlint-github-action@v4
+
+      - name: Cache Maven Packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      # TODO: infrastructure for integration tests with docker-compose
+
+#      - name: Run Tests
+#        run: mvn -B test
+
