@@ -1,5 +1,6 @@
 package dislinkt.accountservice.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -32,5 +33,11 @@ public class Interest {
 
 	@ManyToMany(mappedBy = "interests", cascade = CascadeType.ALL)
 	private List<Resume> resumes;
+
+	public Interest(String name) {
+		super();
+		this.name = name;
+		this.resumes = new ArrayList<Resume>();
+	}
 
 }

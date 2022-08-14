@@ -1,6 +1,6 @@
 package dislinkt.accountservice.entities;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -35,11 +35,21 @@ public class WorkingExperience {
 	private SeniorityLevel seniority;
 
 	@Column(name = "start_date")
-	private Date startDate;
+	private Long startDate;
 
 	@Column(name = "end_date")
-	private Date endDate;
+	private Long endDate;
 
 	@ManyToMany(mappedBy = "workingExperiences", cascade = CascadeType.ALL)
 	private List<Resume> resumes;
+
+	public WorkingExperience(String jobPosition, SeniorityLevel seniority, Long startDate, Long endDate) {
+		super();
+		this.jobPosition = jobPosition;
+		this.seniority = seniority;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.resumes = new ArrayList<Resume>();
+	}
+
 }

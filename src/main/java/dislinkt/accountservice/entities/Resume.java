@@ -1,5 +1,6 @@
 package dislinkt.accountservice.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -29,8 +30,8 @@ public class Resume {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "acount_id")
-	private Long accountId;
+	@Column(name = "user_id", unique = true)
+	private Long userId;
 
 	@Column(name = "biography")
 	private String biography;
@@ -59,12 +60,12 @@ public class Resume {
 			@JoinColumn(name = "skill_id") })
 	private List<Skill> skills;
 
-	@ManyToMany(cascade = CascadeType.PERSIST)
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "resumes_educations", joinColumns = { @JoinColumn(name = "resume_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "education_id") })
 	private List<Education> educations;
 
-	@ManyToMany(cascade = CascadeType.PERSIST)
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "resumes_working_experiences", joinColumns = {
 			@JoinColumn(name = "resume_id") }, inverseJoinColumns = { @JoinColumn(name = "working_experience_id") })
 	private List<WorkingExperience> workingExperiences;
@@ -76,5 +77,17 @@ public class Resume {
 
 	@ManyToMany(mappedBy = "blockedAccounts", cascade = CascadeType.ALL)
 	private List<Resume> resumes;
+
+	public Resume(Long userId) {
+		this.userId = userId;
+		this.publicAccount = true;
+		this.muteConnectionNotifications = false;
+		this.connections = new ArrayList<Connection>();
+		this.interests = new ArrayList<Interest>();
+		this.skills = new ArrayList<Skill>();
+		this.educations = new ArrayList<Education>();
+		this.workingExperiences = new ArrayList<WorkingExperience>();
+		this.blockedAccounts = new ArrayList<Resume>();
+	}
 
 }
