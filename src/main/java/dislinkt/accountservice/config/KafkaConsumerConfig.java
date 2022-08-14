@@ -15,7 +15,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dislinkt.accountservice.entities.Notification;
+import dislinkt.accountservice.dtos.KafkaNotification;
 
 @Configuration
 public class KafkaConsumerConfig {
@@ -34,16 +34,16 @@ public class KafkaConsumerConfig {
 	}
 
 	@Bean
-	public ConsumerFactory<String, Notification> consumerFactory() {
+	public ConsumerFactory<String, KafkaNotification> consumerFactory() {
 		ObjectMapper om = new ObjectMapper();
 		return new DefaultKafkaConsumerFactory<>(consumerConfig(), new StringDeserializer(),
-				new JsonDeserializer<Notification>(Notification.class, om, false));
+				new JsonDeserializer<KafkaNotification>(KafkaNotification.class, om, false));
 	}
 
 	@Bean
-	public ConcurrentKafkaListenerContainerFactory<String, Notification> kafkaListenerContainerFactory(
-			ConsumerFactory<String, Notification> consumerFactory) {
-		ConcurrentKafkaListenerContainerFactory<String, Notification> factory = new ConcurrentKafkaListenerContainerFactory<>();
+	public ConcurrentKafkaListenerContainerFactory<String, KafkaNotification> kafkaListenerContainerFactory(
+			ConsumerFactory<String, KafkaNotification> consumerFactory) {
+		ConcurrentKafkaListenerContainerFactory<String, KafkaNotification> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(consumerFactory);
 		return factory;
 	}

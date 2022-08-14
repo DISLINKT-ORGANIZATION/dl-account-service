@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.stereotype.Component;
 
 import dislinkt.accountservice.dtos.Authority;
+import dislinkt.accountservice.exceptions.InvalidToken;
 import dislinkt.accountservice.services.impl.JwtTokenProvider;
 
 import javax.servlet.FilterChain;
@@ -57,7 +58,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 			String fooResourceUrl = authServiceAddress + "/authentication/users/check-username/" + username;
 			ResponseEntity<Boolean> restTemplateResponse = restTemplate.getForEntity(fooResourceUrl, Boolean.class);
 			if (!restTemplateResponse.getBody()) {
-				throw new UsernameNotFoundException("Username not found on authentication service.");
+				throw new InvalidToken("Username not found on authentication service.");
 			}
 
 			List<String> authoritiesNames = (List<String>) claims.get("authorities");

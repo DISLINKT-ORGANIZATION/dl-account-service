@@ -1,6 +1,6 @@
 package dislinkt.accountservice.entities;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -35,14 +35,25 @@ public class Education {
 	private FieldOfStudy field;
 
 	@Column(name = "start_date")
-	private Date startDate;
+	private Long startDate;
 
 	@Column(name = "end_date")
-	private Date endDate;
+	private Long endDate;
 
 	@Column(name = "grade")
 	private Float grade;
 
 	@ManyToMany(mappedBy = "educations", cascade = CascadeType.ALL)
 	private List<Resume> resumes;
+
+	public Education(String school, FieldOfStudy field, Long startDate, Long endDate, Float grade) {
+		super();
+		this.school = school;
+		this.field = field;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.grade = grade;
+		this.resumes = new ArrayList<Resume>();
+	}
+
 }
