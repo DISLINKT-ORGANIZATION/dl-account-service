@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +30,11 @@ public class TestController {
 
 	@GetMapping()
 	public ResponseEntity<String> test() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Long id = (Long) authentication.getPrincipal();
+		System.out.println(id);
+		
+		
 		logger.info("test...");
 		return ResponseEntity.ok("test");
 	}

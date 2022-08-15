@@ -25,6 +25,9 @@ public class ResumeServiceImpl implements ResumeService {
 	@Autowired
 	private ResumeDtoMapper resumeMapper;
 	
+	@Autowired
+	private AuthenticatedUserService authenticatedUserService;
+	
 	public ResumeDto createResume(Long userId) {
 		Resume resume = resumeRepository.findByUserId(userId);
 		if (resume != null) {
@@ -37,7 +40,9 @@ public class ResumeServiceImpl implements ResumeService {
 	public ResumeDto getResumeById(Long id) {
 		Optional<Resume> resumeOptional = resumeRepository.findById(id);
 		if (resumeOptional.isPresent()) {
-			return resumeMapper.toDto(resumeOptional.get());
+			Resume resume = resumeOptional.get();
+			authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
+			return resumeMapper.toDto(resume);
 		}
 		return null;
 	}
@@ -45,6 +50,7 @@ public class ResumeServiceImpl implements ResumeService {
 	public ResumeDto getResumeByUserId(Long userId) {
 		Resume resume = resumeRepository.findByUserId(userId);
 		if (resume != null) {
+			authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
 			return resumeMapper.toDto(resume);
 		}
 		return null;
@@ -56,6 +62,7 @@ public class ResumeServiceImpl implements ResumeService {
 			throw new EntityNotFound("Resume not found.");
 		}
 		Resume resume = resumeOptional.get();
+		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
 		resume.setBiography(biographyDto.getBiography());
 		resumeRepository.save(resume);
 		return resumeMapper.toDto(resume);
@@ -67,6 +74,7 @@ public class ResumeServiceImpl implements ResumeService {
 			throw new EntityNotFound("Resume not found.");
 		}
 		Resume resume = resumeOptional.get();
+		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
 		resume.setPhoneNumber(phoneNumberDto.getPhoneNumber());
 		resumeRepository.save(resume);
 		return resumeMapper.toDto(resume);
@@ -78,6 +86,7 @@ public class ResumeServiceImpl implements ResumeService {
 			throw new EntityNotFound("Resume not found.");
 		}
 		Resume resume = resumeOptional.get();
+		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
 		resume.setPublicAccount(!resume.getPublicAccount());
 		resumeRepository.save(resume);
 		return resumeMapper.toDto(resume);
@@ -89,6 +98,7 @@ public class ResumeServiceImpl implements ResumeService {
 			throw new EntityNotFound("Resume not found.");
 		}
 		Resume resume = resumeOptional.get();
+		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
 		resume.setMuteConnectionNotifications(!resume.getMuteConnectionNotifications());
 		resumeRepository.save(resume);
 		return resumeMapper.toDto(resume);

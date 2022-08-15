@@ -33,6 +33,9 @@ public class EducationServiceImpl implements EducationService {
 
 	@Autowired
 	private EducationDtoMapper educationMapper;
+	
+	@Autowired
+	private AuthenticatedUserService authenticatedUserService;
 
 	public ResumeDto updateEducation(EducationDto educationDto) {
 		Optional<Resume> resumeOptional = resumeRepository.findById(educationDto.getResumeId());
@@ -40,6 +43,7 @@ public class EducationServiceImpl implements EducationService {
 			throw new EntityNotFound("Resume not found.");
 		}
 		Resume resume = resumeOptional.get();
+		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
 		OptionalLong educationIdOptional = resume.getEducations().stream().mapToLong(education -> education.getId())
 				.filter(id -> id == educationDto.getResumeId()).findFirst();
 		Long dtoId = educationDto.getId() != null ? educationDto.getId() : 0;
