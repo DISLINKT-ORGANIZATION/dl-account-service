@@ -14,7 +14,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 
 	@ExceptionHandler(InvalidToken.class)
 	public void handleInvalidToken(HttpServletResponse response) throws IOException {
-		response.sendError(HttpStatus.BAD_REQUEST.value(), "Invalid token.");
+		response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid token.");
 	}
 	
 	@ExceptionHandler(ResumeAlreadyExists.class)

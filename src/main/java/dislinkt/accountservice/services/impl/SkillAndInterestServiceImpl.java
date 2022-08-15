@@ -32,6 +32,9 @@ public class SkillAndInterestServiceImpl implements SkillAndInterestService {
 	
 	@Autowired
 	private SkillRepository skillRepository;
+	
+	@Autowired
+	private AuthenticatedUserService authenticatedUserService;
 
 	public ResumeDto updateSkillsAndInterests(SkillsAndInterestsDto dto) {
 		Optional<Resume> resumeOptional = resumeRepository.findById(dto.getResumeId());
@@ -39,6 +42,7 @@ public class SkillAndInterestServiceImpl implements SkillAndInterestService {
 			throw new EntityNotFound("Resume not found.");
 		}
 		Resume resume = resumeOptional.get();
+		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
 		resume.setSkills(new ArrayList<Skill>());
 		resume.setInterests(new ArrayList<Interest>());
 		
