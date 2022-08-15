@@ -62,11 +62,12 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 			}
 
 			List<String> authoritiesNames = (List<String>) claims.get("authorities");
+			Long id = ((Integer) claims.get("id")).longValue();
 
 			List<Authority> authorities = new ArrayList<Authority>();
 			authoritiesNames.forEach(name -> authorities.add(new Authority(1L, name)));
 
-			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(null, null,
+			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(id, null,
 					authorities);
 			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

@@ -33,6 +33,9 @@ public class WorkingExperienceServiceImpl implements WorkingExperienceService {
 
 	@Autowired
 	private WorkingExperienceDtoMapper workingExperienceMapper;
+	
+	@Autowired
+	private AuthenticatedUserService authenticatedUserService;
 
 	public ResumeDto updateWorkingExperience(WorkingExperienceDto workingExperienceDto) {
 		Optional<Resume> resumeOptional = resumeRepository.findById(workingExperienceDto.getResumeId());
@@ -40,6 +43,7 @@ public class WorkingExperienceServiceImpl implements WorkingExperienceService {
 			throw new EntityNotFound("Resume not found.");
 		}
 		Resume resume = resumeOptional.get();
+		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
 		OptionalLong workingExperienceIdOptional = resume.getWorkingExperiences().stream()
 				.mapToLong(workingExperience -> workingExperience.getId())
 				.filter(id -> id == workingExperienceDto.getResumeId()).findFirst();
