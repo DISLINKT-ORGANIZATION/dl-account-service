@@ -32,4 +32,11 @@ public class ConnectionRequest {
 	@Column(name = "accepted")
 	private Boolean accepted;
 
+	public ConnectionRequest(Long senderId, Long receiverId, Boolean accepted) {
+		super();
+		this.senderId = senderId;
+		this.receiverId = receiverId;
+		this.accepted = accepted;
+	}
+
 }
