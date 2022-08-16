@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -45,7 +46,7 @@ public class Resume {
 	@Column(name = "mute_connection_notifications")
 	private Boolean muteConnectionNotifications;
 
-	@ManyToMany(cascade = CascadeType.PERSIST)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "resumes_connections", joinColumns = { @JoinColumn(name = "resume_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "connection_id") })
 	private List<Connection> connections;
@@ -70,7 +71,7 @@ public class Resume {
 			@JoinColumn(name = "resume_id") }, inverseJoinColumns = { @JoinColumn(name = "working_experience_id") })
 	private List<WorkingExperience> workingExperiences;
 
-	@ManyToMany(cascade = CascadeType.PERSIST)
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "resumes_blocked_accounts", joinColumns = {
 			@JoinColumn(name = "resume_id") }, inverseJoinColumns = { @JoinColumn(name = "blocked_account_id") })
 	private List<Resume> blockedAccounts;

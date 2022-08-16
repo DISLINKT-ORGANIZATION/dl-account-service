@@ -1,5 +1,6 @@
 package dislinkt.accountservice.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -27,8 +28,8 @@ public class Connection {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "followed_user_id")
-	private Long followedUserId;
+	@Column(name = "followed_resume_id")
+	private Long followedResumeId;
 
 	@Column(name = "mute_messages")
 	private Boolean muteMessages;
@@ -38,5 +39,15 @@ public class Connection {
 
 	@ManyToMany(mappedBy = "connections", cascade = CascadeType.ALL)
 	private List<Resume> resumes;
+
+	public Connection(Long followedResumeId, Boolean muteMessages, Boolean mutePosts) {
+		super();
+		this.followedResumeId = followedResumeId;
+		this.muteMessages = muteMessages;
+		this.mutePosts = mutePosts;
+		this.resumes = new ArrayList<Resume>();
+	}
+	
+	
 
 }
