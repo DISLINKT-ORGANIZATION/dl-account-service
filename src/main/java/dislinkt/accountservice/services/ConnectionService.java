@@ -4,7 +4,7 @@ import java.util.List;
 
 import dislinkt.accountservice.dtos.ConnectionDto;
 import dislinkt.accountservice.dtos.ConnectionRequestDto;
-import dislinkt.accountservice.dtos.ResumeDto;
+import dislinkt.accountservice.dtos.AccountDto;
 
 public interface ConnectionService {
 
@@ -26,7 +26,7 @@ public interface ConnectionService {
 	
 	void unblock(ConnectionDto connectionDto);
 	
-	List<ResumeDto> getBlockedResumes(Long resumeId);
+	List<AccountDto> getBlockedResumes(Long resumeId);
 	
 	boolean checkIfMutedPosts(Long resumeId, Long connectionResumeId);
 	

@@ -41,15 +41,14 @@ public class WorkingExperience {
 	private Long endDate;
 
 	@ManyToMany(mappedBy = "workingExperiences", cascade = CascadeType.ALL)
-	private List<Resume> resumes;
+	private List<Account> accounts;
 
 	public WorkingExperience(String jobPosition, SeniorityLevel seniority, Long startDate, Long endDate) {
-		super();
 		this.jobPosition = jobPosition;
 		this.seniority = seniority;
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.resumes = new ArrayList<Resume>();
+		this.accounts = new ArrayList<Account>();
 	}
 
 }

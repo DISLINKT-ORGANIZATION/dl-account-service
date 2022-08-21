@@ -32,12 +32,12 @@ public class Interest {
 	private String name;
 
 	@ManyToMany(mappedBy = "interests", cascade = CascadeType.ALL)
-	private List<Resume> resumes;
+	private List<Account> accounts;
 
 	public Interest(String name) {
 		super();
 		this.name = name;
-		this.resumes = new ArrayList<Resume>();
+		this.accounts = new ArrayList<Account>();
 	}
 
 }

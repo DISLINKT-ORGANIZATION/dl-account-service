@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import dislinkt.accountservice.dtos.KafkaNotification;
-import dislinkt.accountservice.services.impl.ResumeServiceImpl;
+import dislinkt.accountservice.services.impl.AccountServiceImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 public class KafkaListeners {
 
 	@Autowired
-	ResumeServiceImpl resumeService;
+	AccountServiceImpl resumeService;
 
 	private static final Logger logger = LoggerFactory.getLogger(KafkaListeners.class);
 
@@ -28,7 +28,7 @@ public class KafkaListeners {
 
 		switch (data.getType()) {
 		case REGISTERED_USER:
-			resumeService.createResume(((Integer) data.getPayload()).longValue());
+			resumeService.createAccount(((Integer) data.getPayload()).longValue());
 			break;
 		default:
 		}
