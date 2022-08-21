@@ -17,7 +17,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 		response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid token.");
 	}
 	
-	@ExceptionHandler(ResumeAlreadyExists.class)
+	@ExceptionHandler(AccountAlreadyExists.class)
 	public void handleResumeAlreadyExists(HttpServletResponse response) throws IOException {
 		response.sendError(HttpStatus.CONFLICT.value(), "Resume already exists.");
 	}

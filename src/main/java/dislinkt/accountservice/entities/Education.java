@@ -44,16 +44,15 @@ public class Education {
 	private Float grade;
 
 	@ManyToMany(mappedBy = "educations", cascade = CascadeType.ALL)
-	private List<Resume> resumes;
+	private List<Account> accounts;
 
 	public Education(String school, FieldOfStudy field, Long startDate, Long endDate, Float grade) {
-		super();
 		this.school = school;
 		this.field = field;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.grade = grade;
-		this.resumes = new ArrayList<Resume>();
+		this.accounts = new ArrayList<>();
 	}
 
 }

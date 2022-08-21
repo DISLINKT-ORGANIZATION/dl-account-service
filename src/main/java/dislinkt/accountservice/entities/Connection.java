@@ -28,8 +28,8 @@ public class Connection {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "followed_resume_id")
-	private Long followedResumeId;
+	@Column(name = "followed_account_id")
+	private Long followedAccountId;
 
 	@Column(name = "mute_messages")
 	private Boolean muteMessages;
@@ -38,14 +38,14 @@ public class Connection {
 	private Boolean mutePosts;
 
 	@ManyToMany(mappedBy = "connections", cascade = CascadeType.ALL)
-	private List<Resume> resumes;
+	private List<Account> accounts;
 
 	public Connection(Long followedResumeId, Boolean muteMessages, Boolean mutePosts) {
 		super();
-		this.followedResumeId = followedResumeId;
+		this.followedAccountId = followedResumeId;
 		this.muteMessages = muteMessages;
 		this.mutePosts = mutePosts;
-		this.resumes = new ArrayList<Resume>();
+		this.accounts = new ArrayList<Account>();
 	}
 	
 	

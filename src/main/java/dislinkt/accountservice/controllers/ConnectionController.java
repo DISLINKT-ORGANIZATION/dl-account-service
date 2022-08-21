@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import dislinkt.accountservice.dtos.ConnectionDto;
 import dislinkt.accountservice.dtos.ConnectionRequestDto;
-import dislinkt.accountservice.dtos.ResumeDto;
+import dislinkt.accountservice.dtos.AccountDto;
 import dislinkt.accountservice.services.ConnectionService;
 
 @RestController
@@ -92,8 +92,8 @@ public class ConnectionController {
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@GetMapping("/blocked-resumes/{resumeId}")
 	public ResponseEntity<?> getBlockedResumes(@PathVariable Long resumeId) {
-		List<ResumeDto> resumeDtos = connectionService.getBlockedResumes(resumeId);
-		return ResponseEntity.ok(resumeDtos);
+		List<AccountDto> accountDtos = connectionService.getBlockedResumes(resumeId);
+		return ResponseEntity.ok(accountDtos);
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
