@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SkillDto {
+public class SkillProficiencyDto {
 
 	private Long id;
 	private String name;
 	private int type;
+	private int skillProficiency;
 }
 

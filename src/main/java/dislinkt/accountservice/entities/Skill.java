@@ -34,14 +34,9 @@ public class Skill {
 	@Column(name = "type")
 	private SkillType type;
 
-	@ManyToMany(mappedBy = "skills", cascade = CascadeType.ALL)
-	private List<Resume> resumes;
-
 	public Skill(String name, SkillType type) {
-		super();
 		this.name = name;
 		this.type = type;
-		this.resumes = new ArrayList<Resume>();
 	}
 
 }
