@@ -7,26 +7,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import dislinkt.accountservice.dtos.EducationDto;
-import dislinkt.accountservice.dtos.ResumeDto;
+import dislinkt.accountservice.dtos.AccountDto;
 import dislinkt.accountservice.entities.Education;
 import dislinkt.accountservice.entities.FieldOfStudy;
-import dislinkt.accountservice.entities.Resume;
+import dislinkt.accountservice.entities.Account;
 import dislinkt.accountservice.exceptions.EntityNotFound;
 import dislinkt.accountservice.exceptions.InconsistentData;
 import dislinkt.accountservice.mappers.EducationDtoMapper;
-import dislinkt.accountservice.mappers.ResumeDtoMapper;
+import dislinkt.accountservice.mappers.AccountDtoMapper;
 import dislinkt.accountservice.repositories.EducationRepository;
-import dislinkt.accountservice.repositories.ResumeRepository;
+import dislinkt.accountservice.repositories.AccountRepository;
 import dislinkt.accountservice.services.EducationService;
 
 @Service
 public class EducationServiceImpl implements EducationService {
 
 	@Autowired
-	private ResumeRepository resumeRepository;
+	private AccountRepository accountRepository;
 
 	@Autowired
-	private ResumeDtoMapper resumeMapper;
+	private AccountDtoMapper resumeMapper;
 
 	@Autowired
 	private EducationRepository educationRepository;
@@ -37,14 +37,14 @@ public class EducationServiceImpl implements EducationService {
 	@Autowired
 	private AuthenticatedUserService authenticatedUserService;
 
-	public ResumeDto updateEducation(EducationDto educationDto) {
-		Optional<Resume> resumeOptional = resumeRepository.findById(educationDto.getResumeId());
+	public AccountDto updateEducation(EducationDto educationDto) {
+		Optional<Account> resumeOptional = accountRepository.findById(educationDto.getResumeId());
 		if (!resumeOptional.isPresent()) {
 			throw new EntityNotFound("Resume not found.");
 		}
-		Resume resume = resumeOptional.get();
-		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
-		OptionalLong educationIdOptional = resume.getEducations().stream().mapToLong(education -> education.getId())
+		Account account = resumeOptional.get();
+		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
+		OptionalLong educationIdOptional = account.getEducations().stream().mapToLong(education -> education.getId())
 				.filter(id -> id == educationDto.getResumeId()).findFirst();
 		Long dtoId = educationDto.getId() != null ? educationDto.getId() : 0;
 		Optional<Education> educationOptional = educationRepository.findById(dtoId);
@@ -53,9 +53,9 @@ public class EducationServiceImpl implements EducationService {
 		}
 		if (!educationOptional.isPresent()) {
 			Education newEducation = educationMapper.toEntity(educationDto);
-			newEducation.getResumes().add(resume);
-			resume.getEducations().add(newEducation);
-			resumeRepository.save(resume);
+			newEducation.getAccounts().add(account);
+			account.getEducations().add(newEducation);
+			accountRepository.save(account);
 		} else {
 			Education education = educationOptional.get();
 			education.setSchool(educationDto.getSchool());
@@ -65,7 +65,7 @@ public class EducationServiceImpl implements EducationService {
 			education.setGrade(educationDto.getGrade());
 			educationRepository.save(education);
 		}
-		return resumeMapper.toDto(resumeRepository.findById(educationDto.getResumeId()).get());
+		return resumeMapper.toDto(accountRepository.findById(educationDto.getResumeId()).get());
 
 	}
 }

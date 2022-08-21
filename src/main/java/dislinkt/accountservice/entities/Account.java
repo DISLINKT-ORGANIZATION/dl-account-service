@@ -23,8 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "resumes")
-public class Resume {
+@Table(name = "accounts")
+public class Account {
 
 	@Id
 	@Column(name = "id")
@@ -34,7 +34,7 @@ public class Resume {
 	@Column(name = "user_id", unique = true)
 	private Long userId;
 
-	@Column(name = "biography")
+	@Column(name = "biography", columnDefinition="TEXT")
 	private String biography;
 
 	@Column(name = "phone_number")
@@ -43,52 +43,56 @@ public class Resume {
 	@Column(name = "public_account")
 	private Boolean publicAccount;
 
-	@Column(name = "mute_connection_notifications")
-	private Boolean muteConnectionNotifications;
+	@Column(name = "mute_message_notifications")
+	private Boolean muteMessageNotifications;
+
+	@Column(name = "mute_post_notifications")
+	private Boolean mutePostNotifications;
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "resumes_connections", joinColumns = { @JoinColumn(name = "resume_id") }, inverseJoinColumns = {
+	@JoinTable(name = "accounts_connections", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "connection_id") })
 	private List<Connection> connections;
 
 	@ManyToMany(cascade = CascadeType.PERSIST)
-	@JoinTable(name = "resumes_interests", joinColumns = { @JoinColumn(name = "resume_id") }, inverseJoinColumns = {
+	@JoinTable(name = "accounts_interests", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "interest_id") })
 	private List<Interest> interests;
 
 	@ManyToMany(cascade = CascadeType.PERSIST)
-	@JoinTable(name = "resumes_skills", joinColumns = { @JoinColumn(name = "resume_id") }, inverseJoinColumns = {
+	@JoinTable(name = "accounts_skill_proficiencies", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "skill_id") })
-	private List<Skill> skills;
+	private List<SkillProficiency> skillProficiencies;
 
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "resumes_educations", joinColumns = { @JoinColumn(name = "resume_id") }, inverseJoinColumns = {
+	@JoinTable(name = "accounts_educations", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "education_id") })
 	private List<Education> educations;
 
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "resumes_working_experiences", joinColumns = {
-			@JoinColumn(name = "resume_id") }, inverseJoinColumns = { @JoinColumn(name = "working_experience_id") })
+	@JoinTable(name = "accounts_working_experiences", joinColumns = {
+			@JoinColumn(name = "account_id") }, inverseJoinColumns = { @JoinColumn(name = "working_experience_id") })
 	private List<WorkingExperience> workingExperiences;
 
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "resumes_blocked_accounts", joinColumns = {
-			@JoinColumn(name = "resume_id") }, inverseJoinColumns = { @JoinColumn(name = "blocked_account_id") })
-	private List<Resume> blockedAccounts;
+	@JoinTable(name = "accounts_blocked_accounts", joinColumns = {
+			@JoinColumn(name = "account_id") }, inverseJoinColumns = { @JoinColumn(name = "blocked_account_id") })
+	private List<Account> blockedAccounts;
 
 	@ManyToMany(mappedBy = "blockedAccounts", cascade = CascadeType.ALL)
-	private List<Resume> resumes;
+	private List<Account> accounts;
 
-	public Resume(Long userId) {
+	public Account(Long userId) {
 		this.userId = userId;
 		this.publicAccount = true;
-		this.muteConnectionNotifications = false;
+		this.muteMessageNotifications = false;
+		this.mutePostNotifications = false;
 		this.connections = new ArrayList<Connection>();
 		this.interests = new ArrayList<Interest>();
-		this.skills = new ArrayList<Skill>();
+		this.skillProficiencies = new ArrayList<SkillProficiency>();
 		this.educations = new ArrayList<Education>();
 		this.workingExperiences = new ArrayList<WorkingExperience>();
-		this.blockedAccounts = new ArrayList<Resume>();
+		this.blockedAccounts = new ArrayList<Account>();
 	}
 
 }

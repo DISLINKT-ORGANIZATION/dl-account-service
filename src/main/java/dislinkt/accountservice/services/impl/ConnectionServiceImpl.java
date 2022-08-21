@@ -9,15 +9,15 @@ import org.springframework.stereotype.Service;
 
 import dislinkt.accountservice.dtos.ConnectionDto;
 import dislinkt.accountservice.dtos.ConnectionRequestDto;
-import dislinkt.accountservice.dtos.ResumeDto;
+import dislinkt.accountservice.dtos.AccountDto;
 import dislinkt.accountservice.entities.Connection;
 import dislinkt.accountservice.entities.ConnectionRequest;
-import dislinkt.accountservice.entities.Resume;
+import dislinkt.accountservice.entities.Account;
 import dislinkt.accountservice.exceptions.EntityNotFound;
-import dislinkt.accountservice.mappers.ResumeDtoMapper;
+import dislinkt.accountservice.mappers.AccountDtoMapper;
 import dislinkt.accountservice.repositories.ConnectionRepository;
 import dislinkt.accountservice.repositories.ConnectionRequestRepository;
-import dislinkt.accountservice.repositories.ResumeRepository;
+import dislinkt.accountservice.repositories.AccountRepository;
 import dislinkt.accountservice.services.ConnectionService;
 
 @Service
@@ -30,10 +30,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 	private ConnectionRequestRepository connectionRequestRepository;
 
 	@Autowired
-	private ResumeRepository resumeRepository;
+	private AccountRepository accountRepository;
 
 	@Autowired
-	private ResumeDtoMapper resumeMapper;
+	private AccountDtoMapper resumeMapper;
 
 	@Autowired
 	private AuthenticatedUserService authenticatedUserService;
@@ -42,10 +42,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 		if (checkIfBlocked(connectionDto.getConnectionResumeId(), connectionDto.getResumeId())) {
 			throw new EntityNotFound("User is blocked");
 		}
-		Resume resume = getResume(connectionDto.getResumeId());
-		Resume connectionResume = getResume(connectionDto.getConnectionResumeId());
-		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
-		if (connectionResume.getPublicAccount()) {
+		Account account = getResume(connectionDto.getResumeId());
+		Account connectionAccount = getResume(connectionDto.getConnectionResumeId());
+		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
+		if (connectionAccount.getPublicAccount()) {
 			return createConnection(connectionDto.getResumeId(), connectionDto.getConnectionResumeId());
 		} else {
 			return createConnectionRequest(connectionDto.getResumeId(), connectionDto.getConnectionResumeId());
@@ -53,12 +53,12 @@ public class ConnectionServiceImpl implements ConnectionService {
 	}
 
 	public List<ConnectionRequestDto> getUsersConnectionRequests(Long resumeId) {
-		Resume resume = getResume(resumeId);
-		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
+		Account account = getResume(resumeId);
+		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
 		List<ConnectionRequest> requests = connectionRequestRepository.findByReceiverId(resumeId);
 		List<ConnectionRequestDto> dtos = requests.stream().map(request -> {
-			Resume senderResume = getResume(request.getSenderId());
-			return new ConnectionRequestDto(request.getId(), resumeMapper.toDto(senderResume));
+			Account senderAccount = getResume(request.getSenderId());
+			return new ConnectionRequestDto(request.getId(), resumeMapper.toDto(senderAccount));
 		}).collect(Collectors.toList());
 		return dtos;
 	}
@@ -70,8 +70,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 			throw new EntityNotFound("Connection request does not exist.");
 		}
 		ConnectionRequest connectionRequest = connectionRequestOptional.get();
-		Resume resume = getResume(connectionRequest.getReceiverId());
-		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
+		Account account = getResume(connectionRequest.getReceiverId());
+		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
 		connectionRequest.setAccepted(true);
 		connectionRequestRepository.save(connectionRequest);
 		return createConnection(connectionRequest.getSenderId(), connectionRequest.getReceiverId());
@@ -84,31 +84,31 @@ public class ConnectionServiceImpl implements ConnectionService {
 			throw new EntityNotFound("Connection request does not exist.");
 		}
 		ConnectionRequest connectionRequest = connectionRequestOptional.get();
-		Resume resume = getResume(connectionRequest.getReceiverId());
-		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
+		Account account = getResume(connectionRequest.getReceiverId());
+		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
 		connectionRequestRepository.delete(connectionRequest);
 		return new ConnectionDto(connectionRequest.getSenderId(), connectionRequest.getReceiverId());
 	}
 
 	public void unfollow(ConnectionDto connectionDto) {
-		Resume resume = getResume(connectionDto.getResumeId());
-		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
-		Optional<Connection> connectionOptional = resume.getConnections().stream()
-				.filter(item -> item.getFollowedResumeId() == connectionDto.getConnectionResumeId()).findFirst();
+		Account account = getResume(connectionDto.getResumeId());
+		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
+		Optional<Connection> connectionOptional = account.getConnections().stream()
+				.filter(item -> item.getFollowedAccountId() == connectionDto.getConnectionResumeId()).findFirst();
 		if (!connectionOptional.isPresent()) {
 			throw new EntityNotFound("Connection does not exist.");
 		}
 		Connection connection = connectionOptional.get();
-		resume.getConnections().remove(connection);
-		resumeRepository.save(resume);
+		account.getConnections().remove(connection);
+		accountRepository.save(account);
 		connectionRepository.delete(connection);
 	}
 
 	public void changeMuteMessages(ConnectionDto connectionDto) {
-		Resume resume = getResume(connectionDto.getResumeId());
-		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
-		Optional<Connection> connectionOptional = resume.getConnections().stream()
-				.filter(item -> item.getFollowedResumeId() == connectionDto.getConnectionResumeId()).findFirst();
+		Account account = getResume(connectionDto.getResumeId());
+		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
+		Optional<Connection> connectionOptional = account.getConnections().stream()
+				.filter(item -> item.getFollowedAccountId() == connectionDto.getConnectionResumeId()).findFirst();
 		if (!connectionOptional.isPresent()) {
 			throw new EntityNotFound("Connection does not exist.");
 		}
@@ -118,9 +118,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 	}
 
 	public void changeMutePosts(ConnectionDto connectionDto) {
-		Resume resume = getResume(connectionDto.getResumeId());
-		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
-		Optional<Connection> connectionOptional = resume.getConnections().stream()
+		Account account = getResume(connectionDto.getResumeId());
+		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
+		Optional<Connection> connectionOptional = account.getConnections().stream()
 				.filter(item -> item.getId() == connectionDto.getConnectionResumeId()).findFirst();
 		if (!connectionOptional.isPresent()) {
 			throw new EntityNotFound("Connection does not exist.");
@@ -131,31 +131,31 @@ public class ConnectionServiceImpl implements ConnectionService {
 	}
 
 	public void block(ConnectionDto connectionDto) {
-		Resume resume = getResume(connectionDto.getResumeId());
-		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
-		Resume connectionResume = getResume(connectionDto.getConnectionResumeId());
-		resume.getBlockedAccounts().add(connectionResume);
-		resumeRepository.save(resume);
+		Account account = getResume(connectionDto.getResumeId());
+		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
+		Account connectionAccount = getResume(connectionDto.getConnectionResumeId());
+		account.getBlockedAccounts().add(connectionAccount);
+		accountRepository.save(account);
 	}
 
 	public void unblock(ConnectionDto connectionDto) {
-		Resume resume = getResume(connectionDto.getResumeId());
-		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
-		Resume connectionResume = getResume(connectionDto.getConnectionResumeId());
-		resume.getBlockedAccounts().remove(connectionResume);
-		resumeRepository.save(resume);
+		Account account = getResume(connectionDto.getResumeId());
+		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
+		Account connectionAccount = getResume(connectionDto.getConnectionResumeId());
+		account.getBlockedAccounts().remove(connectionAccount);
+		accountRepository.save(account);
 	}
 
-	public List<ResumeDto> getBlockedResumes(Long resumeId) {
-		Resume resume = getResume(resumeId);
-		authenticatedUserService.checkAuthenticatedUser(resume.getUserId());
-		return resume.getBlockedAccounts().stream().map(item -> resumeMapper.toDto(item)).collect(Collectors.toList());
+	public List<AccountDto> getBlockedResumes(Long resumeId) {
+		Account account = getResume(resumeId);
+		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
+		return account.getBlockedAccounts().stream().map(item -> resumeMapper.toDto(item)).collect(Collectors.toList());
 	}
 
 	public boolean checkIfMutedPosts(Long resumeId, Long connectionResumeId) {
-		Resume resume = getResume(resumeId);
-		Optional<Connection> connection = resume.getConnections().stream()
-				.filter(item -> item.getFollowedResumeId() == connectionResumeId).findFirst();
+		Account account = getResume(resumeId);
+		Optional<Connection> connection = account.getConnections().stream()
+				.filter(item -> item.getFollowedAccountId() == connectionResumeId).findFirst();
 		if (!connection.isPresent()) {
 			throw new EntityNotFound("Connection does not exist.");
 		}
@@ -163,9 +163,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 	}
 
 	public boolean checkIfMutedMessages(Long resumeId, Long connectionResumeId) {
-		Resume resume = getResume(resumeId);
-		Optional<Connection> connection = resume.getConnections().stream()
-				.filter(item -> item.getFollowedResumeId() == connectionResumeId).findFirst();
+		Account account = getResume(resumeId);
+		Optional<Connection> connection = account.getConnections().stream()
+				.filter(item -> item.getFollowedAccountId() == connectionResumeId).findFirst();
 		if (!connection.isPresent()) {
 			throw new EntityNotFound("Connection does not exist.");
 		}
@@ -173,8 +173,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 	}
 
 	public boolean checkIfBlocked(Long resumeId, Long connectionResumeId) {
-		Resume resume = getResume(resumeId);
-		Long blockedFound = resume.getBlockedAccounts().stream()
+		Account account = getResume(resumeId);
+		Long blockedFound = account.getBlockedAccounts().stream()
 				.filter(blockedResume -> blockedResume.getId() == connectionResumeId).count();
 		if (blockedFound != 0) {
 			return true;
@@ -193,23 +193,23 @@ public class ConnectionServiceImpl implements ConnectionService {
 	}
 
 	private ConnectionDto createConnection(Long resumeId, Long connectionResumeId) {
-		Resume resume = getResume(resumeId);
-		Long connectionExists = resume.getConnections().stream()
-				.filter(connection -> connection.getFollowedResumeId() == connectionResumeId).count();
+		Account account = getResume(resumeId);
+		Long connectionExists = account.getConnections().stream()
+				.filter(connection -> connection.getFollowedAccountId() == connectionResumeId).count();
 		if (connectionExists == 0) {
 			Connection newConnection = new Connection(connectionResumeId, false, false);
-			resume.getConnections().add(newConnection);
-			resumeRepository.save(resume);
+			account.getConnections().add(newConnection);
+			accountRepository.save(account);
 		}
 		return new ConnectionDto(resumeId, connectionResumeId);
 	}
 
-	private Resume getResume(Long resumeId) {
-		Optional<Resume> resumeOptional = resumeRepository.findById(resumeId);
+	private Account getResume(Long resumeId) {
+		Optional<Account> resumeOptional = accountRepository.findById(resumeId);
 		if (!resumeOptional.isPresent()) {
 			throw new EntityNotFound("Resume does not exist.");
 		}
-		Resume resume = resumeOptional.get();
-		return resume;
+		Account account = resumeOptional.get();
+		return account;
 	}
 }

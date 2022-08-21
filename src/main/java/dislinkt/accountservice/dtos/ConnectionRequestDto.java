@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class ConnectionRequestDto {
 
 	private Long connectionRequestId;
-	private ResumeDto resumeDto;
+	private AccountDto accountDto;
 }
