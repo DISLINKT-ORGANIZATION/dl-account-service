@@ -34,11 +34,6 @@ public class AccountController {
 	@Autowired
 	private EducationService educationService;
 
-	@Autowired
-	private SkillProficiencyService skillProficiencyService;
-	
-	@Autowired
-	private SkillProficiencyService skillAndInterestService;
 
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@GetMapping("/{id}")
@@ -94,27 +89,6 @@ public class AccountController {
 	public ResponseEntity<?> updateEducation(@RequestBody EducationDto updateDto) {
 		AccountDto accountDto = educationService.updateEducation(updateDto);
 		return ResponseEntity.ok(accountDto);
-	}
-	
-	@PreAuthorize("hasRole('ROLE_USER')")
-	@PutMapping("/skills-and-interests")
-	public ResponseEntity<?> updateSkillsAndInterests(@RequestBody SkillProficiencyDto updateDto) {
-		AccountDto accountDto = skillAndInterestService.updateSkillProficiency(updateDto);
-		return ResponseEntity.ok(accountDto);
-	}
-
-	@PreAuthorize("hasRole('ROLE_USER')")
-	@GetMapping("/skill-proficiencies")
-	public ResponseEntity<Object> retrieveAllSkillProficiencies() {
-		List<SkillProficiencyDto> dto = skillProficiencyService.getAllSkillProficiencies();
-		return ResponseEntity.ok(dto);
-	}
-
-	@PreAuthorize("hasRole('ROLE_USER')")
-	@GetMapping("/skill-proficiencies/type")
-	public ResponseEntity<Map<String, List<SkillProficiencyDto>>> getAllByType() {
-		Map<String, List<SkillProficiencyDto>> dtos = skillProficiencyService.getAllByType();
-		return new ResponseEntity<>(dtos, HttpStatus.OK);
 	}
 
 }
