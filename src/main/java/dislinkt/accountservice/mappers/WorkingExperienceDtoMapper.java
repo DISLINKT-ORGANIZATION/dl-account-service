@@ -24,7 +24,7 @@ public class WorkingExperienceDtoMapper {
 				dto.getStartDate(), dto.getEndDate());
 	}
 	
-	public List<WorkingExperienceDto> toCollectionDto(Collection<WorkingExperience> workingExperiences) {
-		return workingExperiences.stream().map(this::toDto).collect(Collectors.toList());
+	public List<WorkingExperienceDto> toCollectionDto(Collection<WorkingExperience> workingExperience) {
+		return workingExperience.stream().map(this::toDto).collect(Collectors.toList());
 	}
 }

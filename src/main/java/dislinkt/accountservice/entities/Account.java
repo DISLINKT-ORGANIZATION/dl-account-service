@@ -65,14 +65,14 @@ public class Account {
 	private List<SkillProficiency> skillProficiencies;
 
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "accounts_educations", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {
+	@JoinTable(name = "accounts_education", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "education_id") })
-	private List<Education> educations;
+	private List<Education> education;
 
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "accounts_working_experiences", joinColumns = {
+	@JoinTable(name = "accounts_working_experience", joinColumns = {
 			@JoinColumn(name = "account_id") }, inverseJoinColumns = { @JoinColumn(name = "working_experience_id") })
-	private List<WorkingExperience> workingExperiences;
+	private List<WorkingExperience> workingExperience;
 
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "accounts_blocked_accounts", joinColumns = {
@@ -90,8 +90,8 @@ public class Account {
 		this.connections = new ArrayList<Connection>();
 		this.interests = new ArrayList<Interest>();
 		this.skillProficiencies = new ArrayList<SkillProficiency>();
-		this.educations = new ArrayList<Education>();
-		this.workingExperiences = new ArrayList<WorkingExperience>();
+		this.education = new ArrayList<Education>();
+		this.workingExperience = new ArrayList<WorkingExperience>();
 		this.blockedAccounts = new ArrayList<Account>();
 	}
 
