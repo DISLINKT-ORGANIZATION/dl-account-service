@@ -20,7 +20,7 @@ public class AccountDto {
 	private Boolean mutePostNotifications;
 	private List<InterestDto> interests;
 	private List<SkillProficiencyDto> skills;
-	private List<EducationDto> educations;
-	private List<WorkingExperienceDto> workingExperiences;
+	private List<EducationDto> education;
+	private List<WorkingExperienceDto> workingExperience;
 
 }

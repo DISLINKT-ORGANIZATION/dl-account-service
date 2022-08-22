@@ -110,8 +110,8 @@ public class AccountController {
 		return ResponseEntity.ok(dto);
 	}
 
-	@GetMapping("/skill-proficiencies/type")
 	@PreAuthorize("hasRole('ROLE_USER')")
+	@GetMapping("/skill-proficiencies/type")
 	public ResponseEntity<Map<String, List<SkillProficiencyDto>>> getAllByType() {
 		Map<String, List<SkillProficiencyDto>> dtos = skillProficiencyService.getAllByType();
 		return new ResponseEntity<>(dtos, HttpStatus.OK);
