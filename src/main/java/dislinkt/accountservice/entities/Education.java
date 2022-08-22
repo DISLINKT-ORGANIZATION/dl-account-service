@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "educations")
+@Table(name = "education")
 public class Education {
 
 	@Id
@@ -43,7 +43,7 @@ public class Education {
 	@Column(name = "grade")
 	private Float grade;
 
-	@ManyToMany(mappedBy = "educations", cascade = CascadeType.ALL)
+	@ManyToMany(mappedBy = "education", cascade = CascadeType.ALL)
 	private List<Account> accounts;
 
 	public Education(String school, FieldOfStudy field, Long startDate, Long endDate, Float grade) {

@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "working_experiences")
+@Table(name = "working_experience")
 public class WorkingExperience {
 
 	@Id
@@ -40,7 +40,7 @@ public class WorkingExperience {
 	@Column(name = "end_date")
 	private Long endDate;
 
-	@ManyToMany(mappedBy = "workingExperiences", cascade = CascadeType.ALL)
+	@ManyToMany(mappedBy = "workingExperience", cascade = CascadeType.ALL)
 	private List<Account> accounts;
 
 	public WorkingExperience(String jobPosition, SeniorityLevel seniority, Long startDate, Long endDate) {

@@ -26,7 +26,7 @@ public class AccountDtoMapper {
 				account.getPublicAccount(), account.getMuteMessageNotifications(), account.getMutePostNotifications(),
 				interestMapper.toCollectionDto(account.getInterests()),
 				skillMapper.toCollectionDto(account.getSkillProficiencies()),
-				educationMapper.toCollectionDto(account.getEducations()),
-				workingExperienceMapper.toCollectionDto(account.getWorkingExperiences()));
+				educationMapper.toCollectionDto(account.getEducation()),
+				workingExperienceMapper.toCollectionDto(account.getWorkingExperience()));
 	}
 }
