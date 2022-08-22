@@ -44,7 +44,7 @@ public class WorkingExperienceServiceImpl implements WorkingExperienceService {
 		}
 		Account account = resumeOptional.get();
 		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
-		OptionalLong workingExperienceIdOptional = account.getWorkingExperiences().stream()
+		OptionalLong workingExperienceIdOptional = account.getWorkingExperience().stream()
 				.mapToLong(workingExperience -> workingExperience.getId())
 				.filter(id -> id == workingExperienceDto.getResumeId()).findFirst();
 		Long dtoId = workingExperienceDto.getId() != null ? workingExperienceDto.getId() : 0;
@@ -56,7 +56,7 @@ public class WorkingExperienceServiceImpl implements WorkingExperienceService {
 		if (!workingExperienceOptional.isPresent()) {
 			WorkingExperience newWorkingExperience = workingExperienceMapper.toEntity(workingExperienceDto);
 			newWorkingExperience.getAccounts().add(account);
-			account.getWorkingExperiences().add(newWorkingExperience);
+			account.getWorkingExperience().add(newWorkingExperience);
 			accountRepository.save(account);
 		} else {
 			WorkingExperience workingExperience = workingExperienceOptional.get();

@@ -44,7 +44,7 @@ public class EducationServiceImpl implements EducationService {
 		}
 		Account account = resumeOptional.get();
 		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
-		OptionalLong educationIdOptional = account.getEducations().stream().mapToLong(education -> education.getId())
+		OptionalLong educationIdOptional = account.getEducation().stream().mapToLong(education -> education.getId())
 				.filter(id -> id == educationDto.getResumeId()).findFirst();
 		Long dtoId = educationDto.getId() != null ? educationDto.getId() : 0;
 		Optional<Education> educationOptional = educationRepository.findById(dtoId);
@@ -54,7 +54,7 @@ public class EducationServiceImpl implements EducationService {
 		if (!educationOptional.isPresent()) {
 			Education newEducation = educationMapper.toEntity(educationDto);
 			newEducation.getAccounts().add(account);
-			account.getEducations().add(newEducation);
+			account.getEducation().add(newEducation);
 			accountRepository.save(account);
 		} else {
 			Education education = educationOptional.get();

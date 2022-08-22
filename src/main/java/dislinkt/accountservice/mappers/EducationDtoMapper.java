@@ -23,7 +23,7 @@ public class EducationDtoMapper {
 				dto.getEndDate(), dto.getGrade());
 	}
 	
-	public List<EducationDto> toCollectionDto(Collection<Education> educations) {
-		return educations.stream().map(this::toDto).collect(Collectors.toList());
+	public List<EducationDto> toCollectionDto(Collection<Education> education) {
+		return education.stream().map(this::toDto).collect(Collectors.toList());
 	}
 }

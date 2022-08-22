@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum SkillType {
-	PROGRAMMING_LANGUAGE(0), TECHNOLOGY(1), LANGUAGE(2), SOFT_SKILL(3);
+	PROGRAMMING_LANGUAGE(0),
+	TECHNOLOGY(1),
+	KNOWLEDGE(2),
+	LANGUAGE(3),
+	SOFT_SKILL(4);
 	
 	private int value;
 	private static Map map = new HashMap<>();
