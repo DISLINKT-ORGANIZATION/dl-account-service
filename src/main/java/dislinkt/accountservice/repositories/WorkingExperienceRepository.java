@@ -1,5 +1,6 @@
 package dislinkt.accountservice.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,5 @@ import dislinkt.accountservice.entities.WorkingExperience;
 public interface WorkingExperienceRepository extends JpaRepository<WorkingExperience, Long> {
 
 	Optional<WorkingExperience> findById(Long id);
+	List<WorkingExperience> findAllByAccountId(Long accountId);
 }

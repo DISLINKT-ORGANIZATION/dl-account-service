@@ -11,4 +11,6 @@ import dislinkt.accountservice.entities.Skill;
 public interface SkillRepository extends JpaRepository<Skill, Long> {
 
 	Optional<Skill> findById(Long id);
+
+	Skill findOneByName(String name);
 }
