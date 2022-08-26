@@ -1,16 +1,19 @@
 package dislinkt.accountservice.services.impl;
 
-import java.util.Optional;
-import java.util.OptionalLong;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import dislinkt.accountservice.dtos.SkillDto;
+import dislinkt.accountservice.entities.*;
+import dislinkt.accountservice.exceptions.DateException;
+import dislinkt.accountservice.repositories.JobPositionRepository;
+import dislinkt.accountservice.repositories.SkillRepository;
+import org.bouncycastle.asn1.x500.style.AbstractX500NameStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import dislinkt.accountservice.dtos.AccountDto;
 import dislinkt.accountservice.dtos.WorkingExperienceDto;
-import dislinkt.accountservice.entities.Account;
-import dislinkt.accountservice.entities.SeniorityLevel;
-import dislinkt.accountservice.entities.WorkingExperience;
 import dislinkt.accountservice.exceptions.EntityNotFound;
 import dislinkt.accountservice.exceptions.InconsistentData;
 import dislinkt.accountservice.mappers.AccountDtoMapper;
@@ -33,40 +36,61 @@ public class WorkingExperienceServiceImpl implements WorkingExperienceService {
 
 	@Autowired
 	private WorkingExperienceDtoMapper workingExperienceMapper;
-	
+
 	@Autowired
-	private AuthenticatedUserService authenticatedUserService;
+	private SkillRepository skillRepository;
 
-	public AccountDto updateWorkingExperience(WorkingExperienceDto workingExperienceDto) {
-		Optional<Account> resumeOptional = accountRepository.findById(workingExperienceDto.getResumeId());
-		if (!resumeOptional.isPresent()) {
-			throw new EntityNotFound("Resume not found.");
-		}
-		Account account = resumeOptional.get();
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
-		OptionalLong workingExperienceIdOptional = account.getWorkingExperience().stream()
-				.mapToLong(workingExperience -> workingExperience.getId())
-				.filter(id -> id == workingExperienceDto.getResumeId()).findFirst();
-		Long dtoId = workingExperienceDto.getId() != null ? workingExperienceDto.getId() : 0;
-		Optional<WorkingExperience> workingExperienceOptional = workingExperienceRepository
-				.findById(dtoId);
-		if (workingExperienceOptional.isPresent() && !workingExperienceIdOptional.isPresent()) {
-			throw new InconsistentData("Working experience exists but it is not matched to this resume.");
-		}
-		if (!workingExperienceOptional.isPresent()) {
-			WorkingExperience newWorkingExperience = workingExperienceMapper.toEntity(workingExperienceDto);
-			newWorkingExperience.getAccounts().add(account);
-			account.getWorkingExperience().add(newWorkingExperience);
-			accountRepository.save(account);
-		} else {
-			WorkingExperience workingExperience = workingExperienceOptional.get();
-			workingExperience.setJobPosition(workingExperienceDto.getJobPosition());
-			workingExperience.setSeniority(SeniorityLevel.valueOfInt(workingExperienceDto.getSeniority()));
-			workingExperience.setStartDate(workingExperienceDto.getStartDate());
-			workingExperience.setEndDate(workingExperienceDto.getEndDate());
-			workingExperienceRepository.save(workingExperience);
-		}
-		return resumeMapper.toDto(accountRepository.findById(workingExperienceDto.getResumeId()).get());
+	@Autowired
+	private JobPositionRepository positionRepository;
 
+	public List<WorkingExperienceDto> updateWorkingExperience(Long userId, List<WorkingExperienceDto> experience) {
+		Account account = accountRepository.findByUserId(userId);
+		if (Objects.isNull(account)) {
+			throw new EntityNotFound("Account not found.");
+		}
+
+		List<Long> oldExperience = account.getWorkingExperience().stream().map(el -> el.getId())
+				.collect(Collectors.toList());
+		List<WorkingExperience> newExperience = new ArrayList<>();
+		Date today = new Date();
+		for (WorkingExperienceDto ex : experience) {
+			if (ex.getStartDate() > today.getTime()) {
+				throw new DateException("Start end should not be in the future.");
+			}
+			if (ex.getEndDate() != -1 && ex.getEndDate() < ex.getStartDate()) {
+				throw new DateException("Start end should be before end date.");
+			}
+			List<Skill> skills = new ArrayList<>();
+			for (SkillDto skillDto : ex.getSkills()) {
+				Skill skill = skillRepository.findOneByName(skillDto.getName());
+				skills.add(skill);
+			}
+			JobPosition position = this.positionRepository.findOneByTitle(ex.getPositionTitle());
+			WorkingExperience exp = new WorkingExperience();
+			exp.setAccount(account);
+			exp.setStartDate(ex.getStartDate());
+			exp.setEndDate(ex.getEndDate());
+			exp.setSeniority(SeniorityLevel.valueOfInt(ex.getSeniority()));
+			exp.setSkills(skills);
+			exp.setPosition(position);
+			exp = this.workingExperienceRepository.save(exp);
+			newExperience.add(exp);
+		}
+		account.setWorkingExperience(newExperience);
+		this.accountRepository.save(account);
+		for (Long id : oldExperience) {
+			this.workingExperienceRepository.deleteById(id);
+		}
+		return workingExperienceMapper.toCollectionDto(newExperience);
+	}
+
+	@Override
+	public List<WorkingExperienceDto> getWorkingExperience(Long userId) {
+		Account account = accountRepository.findByUserId(userId);
+		if (Objects.isNull(account)) {
+			throw new EntityNotFound("Account not found.");
+		}
+		List<WorkingExperience> experience = workingExperienceRepository.findAllByAccountId(account.getId());
+		return workingExperienceMapper.toCollectionDto(experience);
 	}
 }

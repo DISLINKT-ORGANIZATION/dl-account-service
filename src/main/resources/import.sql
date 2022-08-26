@@ -184,6 +184,233 @@ insert into skills (name, type) values ('Flexibility', 4);
 -- 86 - Negotiation
 insert into skills (name, type) values ('Negotiation', 4);
 
+------------------------------- JOB POSITIONS -------------------------------
+-- 1
+insert into job_positions (title) values ('Backend Developer');
+-- 2
+insert into job_positions (title) values ('Frontend Developer');
+-- 3
+insert into job_positions (title) values ('FullStack Developer');
+-- 4
+insert into job_positions (title) values ('Data Scientist');
+-- 5
+insert into job_positions (title) values ('Game Developer');
+-- 6
+insert into job_positions (title) values ('Mobile Application Developer');
+-- 7
+insert into job_positions (title) values ('Computer System Analyst');
+-- 8
+insert into job_positions (title) values ('Computer System Engineer');
+-- 9
+insert into job_positions (title) values ('Network System Administrator');
+-- 10
+insert into job_positions (title) values ('Database Administrator');
+-- 11
+insert into job_positions (title) values ('Artificial Intelligence Specialist');
+-- 12
+insert into job_positions (title) values ('Bioinformatics Software Engineer');
+-- 13
+insert into job_positions (title) values ('Computer Forensics Investigator');
+-- 14
+insert into job_positions (title) values ('Cybersecurity Strategist');
+-- 15
+insert into job_positions (title) values ('Data Architect');
+-- 16
+insert into job_positions (title) values ('Electronics Engineer');
+-- 17
+insert into job_positions (title) values ('Game Tester');
+-- 18
+insert into job_positions (title) values ('Lead Software Engineer');
+-- 19
+insert into job_positions (title) values ('Security Administrator');
+-- 20
+insert into job_positions (title) values ('SEO Analyst');
+-- 21
+insert into job_positions (title) values ('Software Architect');
+-- 22
+insert into job_positions (title) values ('Software Tester');
+-- 23
+insert into job_positions (title) values ('Statistical Programmer');
+-- 24
+insert into job_positions (title) values ('Telecommunications Engineer');
+-- 25
+insert into job_positions (title) values ('Telecommunications Specialist');
+
+-- backend - programming lang
+insert into job_positions_skills (job_position_id, skills_id) values (1, 4);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 5);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 6);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 11);
+
+-- frontend - programming lang
+insert into job_positions_skills (job_position_id, skills_id) values (2, 5);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 7);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 8);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 9);
+
+-- fullstack - programming lang
+insert into job_positions_skills (job_position_id, skills_id) values (3, 4);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 5);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 6);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 7);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 8);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 9);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 11);
+
+-- data scientist - programming lang
+insert into job_positions_skills (job_position_id, skills_id) values (4, 11);
+insert into job_positions_skills (job_position_id, skills_id) values (4, 18);
+insert into job_positions_skills (job_position_id, skills_id) values (4, 19);
+
+-- game developer - programming lang
+insert into job_positions_skills (job_position_id, skills_id) values (5, 2);
+insert into job_positions_skills (job_position_id, skills_id) values (5, 3);
+insert into job_positions_skills (job_position_id, skills_id) values (5, 5);
+insert into job_positions_skills (job_position_id, skills_id) values (5, 14);
+
+-- mobile application developer - programming lang
+insert into job_positions_skills (job_position_id, skills_id) values (6, 3);
+insert into job_positions_skills (job_position_id, skills_id) values (6, 5);
+insert into job_positions_skills (job_position_id, skills_id) values (6, 10);
+insert into job_positions_skills (job_position_id, skills_id) values (6, 11);
+insert into job_positions_skills (job_position_id, skills_id) values (6, 16);
+
+-- network system admin - programming lang
+insert into job_positions_skills (job_position_id, skills_id) values (9, 20);
+
+-- software tester - programming lang
+insert into job_positions_skills (job_position_id, skills_id) values (22, 1);
+insert into job_positions_skills (job_position_id, skills_id) values (22, 2);
+insert into job_positions_skills (job_position_id, skills_id) values (22, 3);
+insert into job_positions_skills (job_position_id, skills_id) values (22, 4);
+insert into job_positions_skills (job_position_id, skills_id) values (22, 5);
+insert into job_positions_skills (job_position_id, skills_id) values (22, 6);
+insert into job_positions_skills (job_position_id, skills_id) values (22, 7);
+insert into job_positions_skills (job_position_id, skills_id) values (22, 11);
+
+
+-- backend - technologies
+insert into job_positions_skills (job_position_id, skills_id) values (1, 22);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 23);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 26);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 35);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 36);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 37);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 38);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 49);
+
+-- frontend - technologies
+insert into job_positions_skills (job_position_id, skills_id) values (2, 22);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 23);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 24);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 25);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 30);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 49);
+
+-- fullstack - technologies
+insert into job_positions_skills (job_position_id, skills_id) values (3, 22);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 23);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 24);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 25);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 26);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 35);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 36);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 37);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 38);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 49);
+
+-- data scientist - technologies
+insert into job_positions_skills (job_position_id, skills_id) values (4, 39);
+insert into job_positions_skills (job_position_id, skills_id) values (4, 40);
+insert into job_positions_skills (job_position_id, skills_id) values (4, 41);
+insert into job_positions_skills (job_position_id, skills_id) values (4, 42);
+insert into job_positions_skills (job_position_id, skills_id) values (4, 49);
+
+-- game developer - technologies
+insert into job_positions_skills (job_position_id, skills_id) values (5, 27);
+insert into job_positions_skills (job_position_id, skills_id) values (5, 28);
+insert into job_positions_skills (job_position_id, skills_id) values (5, 29);
+insert into job_positions_skills (job_position_id, skills_id) values (5, 49);
+
+-- mobile application developer - technologies
+insert into job_positions_skills (job_position_id, skills_id) values (6, 30);
+insert into job_positions_skills (job_position_id, skills_id) values (6, 31);
+insert into job_positions_skills (job_position_id, skills_id) values (6, 49);
+
+-- network system admin - technologies
+insert into job_positions_skills (job_position_id, skills_id) values (9, 45);
+insert into job_positions_skills (job_position_id, skills_id) values (9, 46);
+insert into job_positions_skills (job_position_id, skills_id) values (9, 47);
+insert into job_positions_skills (job_position_id, skills_id) values (9, 48);
+insert into job_positions_skills (job_position_id, skills_id) values (9, 49);
+insert into job_positions_skills (job_position_id, skills_id) values (9, 50);
+insert into job_positions_skills (job_position_id, skills_id) values (9, 51);
+
+-- software tester - technologies
+insert into job_positions_skills (job_position_id, skills_id) values (22, 32);
+insert into job_positions_skills (job_position_id, skills_id) values (22, 33);
+insert into job_positions_skills (job_position_id, skills_id) values (22, 34);
+insert into job_positions_skills (job_position_id, skills_id) values (22, 49);
+
+
+-- backend - knowledge
+insert into job_positions_skills (job_position_id, skills_id) values (1, 52);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 53);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 57);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 60);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 64);
+insert into job_positions_skills (job_position_id, skills_id) values (1, 66);
+
+-- frontend - knowledge
+insert into job_positions_skills (job_position_id, skills_id) values (2, 52);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 57);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 60);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 64);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 66);
+insert into job_positions_skills (job_position_id, skills_id) values (2, 68);
+
+-- fullstack - knowledge
+insert into job_positions_skills (job_position_id, skills_id) values (3, 52);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 53);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 57);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 60);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 64);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 66);
+insert into job_positions_skills (job_position_id, skills_id) values (3, 68);
+
+-- data scientist - knowledge
+insert into job_positions_skills (job_position_id, skills_id) values (4, 57);
+insert into job_positions_skills (job_position_id, skills_id) values (4, 69);
+insert into job_positions_skills (job_position_id, skills_id) values (4, 70);
+
+-- game developer - knowledge
+insert into job_positions_skills (job_position_id, skills_id) values (5, 52);
+insert into job_positions_skills (job_position_id, skills_id) values (5, 55);
+insert into job_positions_skills (job_position_id, skills_id) values (5, 56);
+insert into job_positions_skills (job_position_id, skills_id) values (5, 57);
+insert into job_positions_skills (job_position_id, skills_id) values (5, 61);
+insert into job_positions_skills (job_position_id, skills_id) values (5, 62);
+
+-- mobile application developer - knowledge
+insert into job_positions_skills (job_position_id, skills_id) values (6, 52);
+insert into job_positions_skills (job_position_id, skills_id) values (6, 53);
+insert into job_positions_skills (job_position_id, skills_id) values (6, 55);
+insert into job_positions_skills (job_position_id, skills_id) values (6, 56);
+insert into job_positions_skills (job_position_id, skills_id) values (6, 64);
+insert into job_positions_skills (job_position_id, skills_id) values (6, 66);
+
+-- network system admin - knowledge
+insert into job_positions_skills (job_position_id, skills_id) values (9, 54);
+insert into job_positions_skills (job_position_id, skills_id) values (9, 56);
+insert into job_positions_skills (job_position_id, skills_id) values (9, 57);
+insert into job_positions_skills (job_position_id, skills_id) values (9, 58);
+insert into job_positions_skills (job_position_id, skills_id) values (9, 59);
+insert into job_positions_skills (job_position_id, skills_id) values (9, 61);
+
+-- software tester - knowledge
+insert into job_positions_skills (job_position_id, skills_id) values (22, 57);
+insert into job_positions_skills (job_position_id, skills_id) values (22, 63);
+
 
 ------------------------------- PROFICIENCIES -------------------------------
 
@@ -1325,5 +1552,12 @@ insert into accounts_skill_proficiencies (account_id, skill_id) values (11,63);
 insert into accounts_skill_proficiencies (account_id, skill_id) values (11,199);
 
 
-insert into interests (name) values ('interest one');
-insert into interests (name) values ('interest two');
+----------------------- WORKING EXPERIENCE -------------------------------
+-- account id - 1
+-- mad max
+insert into working_experience (start_date, end_date, seniority, position_id, account_id) values (1633384800000, 1661358879822, 1, 1, 1);
+insert into working_experience_skills (working_experience_id, skills_id) values (1, 4);
+insert into working_experience_skills (working_experience_id, skills_id) values (1, 37);
+insert into working_experience_skills (working_experience_id, skills_id) values (1, 60);
+
+insert into accounts_working_experience (account_id, working_experience_id) values (1, 1);

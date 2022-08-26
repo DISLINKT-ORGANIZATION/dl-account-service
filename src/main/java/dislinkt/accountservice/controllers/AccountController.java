@@ -77,12 +77,12 @@ public class AccountController {
 		return ResponseEntity.ok(accountDto);
 	}
 	
-	@PreAuthorize("hasRole('ROLE_USER')")
-	@PutMapping("/working-experience")
-	public ResponseEntity<?> updateWorkingExperience(@RequestBody WorkingExperienceDto updateDto) {
-		AccountDto accountDto = workingExperienceService.updateWorkingExperience(updateDto);
-		return ResponseEntity.ok(accountDto);
-	}
+//	@PreAuthorize("hasRole('ROLE_USER')")
+//	@PutMapping("/working-experience")
+//	public ResponseEntity<?> updateWorkingExperience(@RequestBody WorkingExperienceDto updateDto) {
+//		AccountDto accountDto = workingExperienceService.updateWorkingExperience(updateDto);
+//		return ResponseEntity.ok(accountDto);
+//	}
 	
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@PutMapping("/education")

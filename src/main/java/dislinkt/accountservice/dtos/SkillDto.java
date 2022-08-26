@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SkillsAndInterestsDto {
+public class SkillDto {
 
-	private Long resumeId;
-	private List<Long> skillsIds;
-	private List<Long> interestsIds;
+	private Long id;
+	private String name;
+	private int type;
 }
