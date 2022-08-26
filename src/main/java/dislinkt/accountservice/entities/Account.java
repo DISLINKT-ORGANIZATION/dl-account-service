@@ -3,17 +3,7 @@ package dislinkt.accountservice.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -49,7 +39,7 @@ public class Account {
 	@Column(name = "mute_post_notifications")
 	private Boolean mutePostNotifications;
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "accounts_connections", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "connection_id") })
 	private List<Connection> connections;
@@ -69,9 +59,7 @@ public class Account {
 			@JoinColumn(name = "education_id") })
 	private List<Education> education;
 
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "accounts_working_experience", joinColumns = {
-			@JoinColumn(name = "account_id") }, inverseJoinColumns = { @JoinColumn(name = "working_experience_id") })
+	@OneToMany
 	private List<WorkingExperience> workingExperience;
 
 	@ManyToMany(cascade = CascadeType.ALL)

@@ -1,10 +1,9 @@
 package dislinkt.accountservice.exceptions;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -13,23 +12,29 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(InvalidToken.class)
-	public void handleInvalidToken(HttpServletResponse response) throws IOException {
-		response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid token.");
+	public ResponseEntity<Object> handleInvalidToken(HttpServletResponse response) {
+		return new ResponseEntity<>("Invalid token.", HttpStatus.UNAUTHORIZED);
 	}
 	
 	@ExceptionHandler(AccountAlreadyExists.class)
-	public void handleResumeAlreadyExists(HttpServletResponse response) throws IOException {
-		response.sendError(HttpStatus.CONFLICT.value(), "Resume already exists.");
+	public ResponseEntity<Object> handleResumeAlreadyExists(HttpServletResponse response) {
+		return new ResponseEntity<>("Resume already exists.", HttpStatus.CONFLICT);
 	}
 	
 	@ExceptionHandler(EntityNotFound.class)
-	public void handleNotFound(HttpServletResponse response) throws IOException {
-		response.sendError(HttpStatus.NOT_FOUND.value(), "Entity not found.");
+	public ResponseEntity<Object> handleNotFound(HttpServletResponse response) {
+		return new ResponseEntity<>("Entity not found.", HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(InconsistentData.class)
-	public void handleInconsistentData(HttpServletResponse response) throws IOException {
-		response.sendError(HttpStatus.CONFLICT.value(), "Data is not consistent.");
+	public ResponseEntity<Object> handleInconsistentData(HttpServletResponse response) {
+		return new ResponseEntity<>("Data is not consistent.", HttpStatus.CONFLICT);
 	}
+
+	@ExceptionHandler(DateException.class)
+	public ResponseEntity<Object> handleInvalidDateRange(HttpServletResponse response) {
+		return new ResponseEntity<>("Invalid date range.", HttpStatus.BAD_REQUEST);
+	}
+
 
 }

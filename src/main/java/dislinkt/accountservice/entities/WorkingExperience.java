@@ -3,14 +3,7 @@ package dislinkt.accountservice.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,9 +21,6 @@ public class WorkingExperience {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "job_position")
-	private String jobPosition;
-
 	@Column(name = "seniority")
 	private SeniorityLevel seniority;
 
@@ -40,15 +30,21 @@ public class WorkingExperience {
 	@Column(name = "end_date")
 	private Long endDate;
 
-	@ManyToMany(mappedBy = "workingExperience", cascade = CascadeType.ALL)
-	private List<Account> accounts;
+	@ManyToOne
+	private JobPosition position;
 
-	public WorkingExperience(String jobPosition, SeniorityLevel seniority, Long startDate, Long endDate) {
-		this.jobPosition = jobPosition;
+	@ManyToMany
+	private List<Skill> skills;
+
+	@ManyToOne
+	private Account account;
+
+	public WorkingExperience(JobPosition jobPosition, SeniorityLevel seniority, Long startDate, Long endDate, Account account) {
 		this.seniority = seniority;
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.accounts = new ArrayList<Account>();
+		this.position = jobPosition;
+		this.account = account;
 	}
 
 }

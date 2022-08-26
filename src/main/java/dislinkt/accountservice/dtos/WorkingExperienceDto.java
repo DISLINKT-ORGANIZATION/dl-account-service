@@ -4,22 +4,32 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class WorkingExperienceDto {
 
 	private Long id;
-	private Long resumeId;
-	private String jobPosition;
+	private String positionTitle;
+	private Long positionId;
+	private List<SkillDto> skills;
 	private int seniority;
 	private Long startDate;
 	private Long endDate;
 	
-	public WorkingExperienceDto(Long id, String jobPosition, int seniority, Long startDate, Long endDate) {
-		super();
+	public WorkingExperienceDto(
+			Long id, Long userId,
+			String positionTitle,
+			Long positionId,
+			List<SkillDto> skills,
+			int seniority,
+			Long startDate, Long endDate) {
 		this.id = id;
-		this.jobPosition = jobPosition;
+		this.positionTitle = positionTitle;
+		this.positionId = positionId;
+		this.skills = skills;
 		this.seniority = seniority;
 		this.startDate = startDate;
 		this.endDate = endDate;
