@@ -10,9 +10,6 @@ import dislinkt.accountservice.entities.Account;
 public class AccountDtoMapper {
 
 	@Autowired
-	private InterestDtoMapper interestMapper;
-
-	@Autowired
 	private SkillProficiencyDtoMapper skillMapper;
 
 	@Autowired
@@ -24,7 +21,6 @@ public class AccountDtoMapper {
 	public AccountDto toDto(Account account) {
 		return new AccountDto(account.getId(), account.getUserId(), account.getBiography(), account.getPhoneNumber(),
 				account.getPublicAccount(), account.getMuteMessageNotifications(), account.getMutePostNotifications(),
-				interestMapper.toCollectionDto(account.getInterests()),
 				skillMapper.toCollectionDto(account.getSkillProficiencies()),
 				educationMapper.toCollectionDto(account.getEducation()),
 				workingExperienceMapper.toCollectionDto(account.getWorkingExperience()));

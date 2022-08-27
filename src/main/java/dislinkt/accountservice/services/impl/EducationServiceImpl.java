@@ -1,8 +1,10 @@
 package dislinkt.accountservice.services.impl;
 
-import java.util.Optional;
-import java.util.OptionalLong;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import dislinkt.accountservice.entities.WorkingExperience;
+import dislinkt.accountservice.exceptions.DateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,46 +28,55 @@ public class EducationServiceImpl implements EducationService {
 	private AccountRepository accountRepository;
 
 	@Autowired
-	private AccountDtoMapper resumeMapper;
+	private AccountDtoMapper accountMapper;
 
 	@Autowired
 	private EducationRepository educationRepository;
 
 	@Autowired
 	private EducationDtoMapper educationMapper;
-	
-	@Autowired
-	private AuthenticatedUserService authenticatedUserService;
 
-	public AccountDto updateEducation(EducationDto educationDto) {
-		Optional<Account> resumeOptional = accountRepository.findById(educationDto.getResumeId());
-		if (!resumeOptional.isPresent()) {
-			throw new EntityNotFound("Resume not found.");
+	@Override
+	public List<EducationDto> getEducation(Long userId) {
+		Account account = accountRepository.findByUserId(userId);
+		if (Objects.isNull(account)) {
+			throw new EntityNotFound("Account not found.");
 		}
-		Account account = resumeOptional.get();
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
-		OptionalLong educationIdOptional = account.getEducation().stream().mapToLong(education -> education.getId())
-				.filter(id -> id == educationDto.getResumeId()).findFirst();
-		Long dtoId = educationDto.getId() != null ? educationDto.getId() : 0;
-		Optional<Education> educationOptional = educationRepository.findById(dtoId);
-		if (educationOptional.isPresent() && !educationIdOptional.isPresent()) {
-			throw new InconsistentData("Education exists but it is not matched to this resume.");
-		}
-		if (!educationOptional.isPresent()) {
-			Education newEducation = educationMapper.toEntity(educationDto);
-			newEducation.getAccounts().add(account);
-			account.getEducation().add(newEducation);
-			accountRepository.save(account);
-		} else {
-			Education education = educationOptional.get();
-			education.setSchool(educationDto.getSchool());
-			education.setField(FieldOfStudy.valueOfInt(educationDto.getFieldOfStudy()));
-			education.setStartDate(educationDto.getStartDate());
-			education.setEndDate(educationDto.getEndDate());
-			education.setGrade(educationDto.getGrade());
-			educationRepository.save(education);
-		}
-		return resumeMapper.toDto(accountRepository.findById(educationDto.getResumeId()).get());
+		List<Education> education = educationRepository.findAllByAccountId(account.getId());
+		return educationMapper.toCollectionDto(education);
+	}
 
+	@Override
+	public List<EducationDto> updateEducation(Long userId, List<EducationDto> education) {
+		Account account = accountRepository.findByUserId(userId);
+		if (Objects.isNull(account)) {
+			throw new EntityNotFound("Account not found.");
+		}
+		List<Long> oldEducation = account.getEducation().stream().map(Education::getId)
+				.collect(Collectors.toList());
+		List<Education> newEducation = new ArrayList<>();
+		Date today = new Date();
+		for (EducationDto ed : education) {
+			if (ed.getStartDate() > today.getTime()) {
+				throw new DateException("Start end should not be in the future.");
+			}
+			if (ed.getEndDate() != -1 && ed.getEndDate() < ed.getStartDate()) {
+				throw new DateException("Start end should be before end date.");
+			}
+			Education newEd = new Education();
+			newEd.setAccount(account);
+			newEd.setStartDate(ed.getStartDate());
+			newEd.setEndDate(ed.getEndDate());
+			newEd.setField(FieldOfStudy.valueOfInt(ed.getFieldOfStudy()));
+			newEd.setSchool(ed.getSchool());
+			newEd = this.educationRepository.save(newEd);
+			newEducation.add(newEd);
+		}
+		account.setEducation(newEducation);
+		this.accountRepository.save(account);
+		for (Long id: oldEducation) {
+			this.educationRepository.deleteById(id);
+		}
+		return educationMapper.toCollectionDto(newEducation);
 	}
 }
