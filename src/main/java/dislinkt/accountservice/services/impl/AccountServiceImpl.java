@@ -12,6 +12,7 @@ import dislinkt.accountservice.mappers.AccountDtoMapper;
 import dislinkt.accountservice.repositories.AccountRepository;
 import dislinkt.accountservice.services.AccountService;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,13 +57,11 @@ public class AccountServiceImpl implements AccountService {
 		return null;
 	}
 	
-	public AccountDto updateBiography(BiographyDto biographyDto) {
-		Optional<Account> resumeOptional = accountRepository.findById(biographyDto.getResumeId());
-		if (!resumeOptional.isPresent()) {
-			throw new EntityNotFound("Resume not found.");
+	public AccountDto updateBiography(BiographyDto biographyDto, Long userId) {
+		Account account = accountRepository.findByUserId(userId);
+		if (Objects.isNull(account)) {
+			throw new EntityNotFound("Account not found.");
 		}
-		Account account = resumeOptional.get();
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
 		account.setBiography(biographyDto.getBiography());
 		accountRepository.save(account);
 		return resumeMapper.toDto(account);

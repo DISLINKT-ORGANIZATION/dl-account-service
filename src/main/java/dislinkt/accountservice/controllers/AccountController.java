@@ -35,16 +35,9 @@ public class AccountController {
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
-	@PutMapping("/biography")
-	public ResponseEntity<?> updateBiography(@RequestBody BiographyDto updateDto) {
-		AccountDto accountDto = accountService.updateBiography(updateDto);
-		return ResponseEntity.ok(accountDto);
-	}
-
-	@PreAuthorize("hasRole('ROLE_USER')")
-	@PutMapping("/phone-number")
-	public ResponseEntity<?> updatePhoneNumber(@RequestBody PhoneNumberDto updateDto) {
-		AccountDto accountDto = accountService.updatePhoneNumber(updateDto);
+	@PutMapping("/user/{userId}/biography")
+	public ResponseEntity<?> updateBiography(@RequestBody BiographyDto updateDto, @PathVariable Long userId) {
+		AccountDto accountDto = accountService.updateBiography(updateDto, userId);
 		return ResponseEntity.ok(accountDto);
 	}
 
