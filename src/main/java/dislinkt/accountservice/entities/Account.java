@@ -5,13 +5,12 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "accounts")
 public class Account {
@@ -45,18 +44,11 @@ public class Account {
 	private List<Connection> connections;
 
 	@ManyToMany(cascade = CascadeType.PERSIST)
-	@JoinTable(name = "accounts_interests", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "interest_id") })
-	private List<Interest> interests;
-
-	@ManyToMany(cascade = CascadeType.PERSIST)
 	@JoinTable(name = "accounts_skill_proficiencies", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "skill_id") })
 	private List<SkillProficiency> skillProficiencies;
 
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "accounts_education", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "education_id") })
+	@OneToMany
 	private List<Education> education;
 
 	@OneToMany
@@ -76,7 +68,6 @@ public class Account {
 		this.muteMessageNotifications = false;
 		this.mutePostNotifications = false;
 		this.connections = new ArrayList<Connection>();
-		this.interests = new ArrayList<Interest>();
 		this.skillProficiencies = new ArrayList<SkillProficiency>();
 		this.education = new ArrayList<Education>();
 		this.workingExperience = new ArrayList<WorkingExperience>();
