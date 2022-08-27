@@ -1561,3 +1561,10 @@ insert into working_experience_skills (working_experience_id, skills_id) values 
 insert into working_experience_skills (working_experience_id, skills_id) values (1, 60);
 
 insert into accounts_working_experience (account_id, working_experience_id) values (1, 1);
+
+----------------------- EDUCATION -------------------------------
+-- account id - 1
+-- mad max
+insert into education (start_date, end_date, school, field, account_id)  values (1633384800000, 1661358879822, 'Faculty of Technical Sciences', 0, 1);
+
+insert into accounts_education (account_id, education_id) values (1, 1);
