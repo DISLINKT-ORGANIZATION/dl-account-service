@@ -12,9 +12,7 @@ public interface AccountService {
 
 	AccountDto getAccountByUserId(Long userId);
 	
-	AccountDto updateBiography(BiographyDto biographyDto);
-	
-	AccountDto updatePhoneNumber(PhoneNumberDto phoneNumberDto);
+	AccountDto updateBiography(BiographyDto biographyDto, Long userId);
 
 	AccountDto changeAccountPrivacy(Long accountId);
 	
