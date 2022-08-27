@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BiographyDto {
-	
-	private Long resumeId;
+
 	private String biography;
 }
