@@ -15,14 +15,9 @@ public class EducationDtoMapper {
 
 	public EducationDto toDto(Education education) {
 		return new EducationDto(education.getId(), education.getSchool(), education.getField().ordinal(),
-				education.getStartDate(), education.getEndDate(), education.getGrade());
+				education.getStartDate(), education.getEndDate());
 	}
 
-	public Education toEntity(EducationDto dto) {
-		return new Education(dto.getSchool(), FieldOfStudy.valueOfInt(dto.getFieldOfStudy()), dto.getStartDate(),
-				dto.getEndDate(), dto.getGrade());
-	}
-	
 	public List<EducationDto> toCollectionDto(Collection<Education> education) {
 		return education.stream().map(this::toDto).collect(Collectors.toList());
 	}
