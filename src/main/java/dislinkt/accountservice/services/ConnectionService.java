@@ -8,29 +8,34 @@ import dislinkt.accountservice.dtos.AccountDto;
 
 public interface ConnectionService {
 
-	ConnectionDto follow(ConnectionDto connectionDto);
+	boolean follow(Long currentUserId, Long userId);
 	
-	List<ConnectionRequestDto> getUsersConnectionRequests(Long resumeId);
+	List<ConnectionRequestDto> getUsersConnectionRequests(Long loggedInUserId);
 	
-	ConnectionDto acceptConnectionRequest(Long connectionRequestId);
+	void acceptConnectionRequest(Long connectionRequestId);
 	
 	ConnectionDto declineConnectionRequest(Long connectionRequestId);
 	
-	void unfollow(ConnectionDto connectionDto);
+	void unfollow(Long currentUserId, Long userId);
 	
-	void changeMuteMessages(ConnectionDto connectionDto);
+	boolean changeMuteMessages(Long userId1, Long userId2);
 	
-	void changeMutePosts(ConnectionDto connectionDto);
+	boolean changeMutePosts(Long userId1, Long userId2);
 	
-	void block(ConnectionDto connectionDto);
+	void block(Long userId1, Long userId2);
 	
-	void unblock(ConnectionDto connectionDto);
+	void unblock(Long userId1, Long userId2);
 	
-	List<AccountDto> getBlockedResumes(Long resumeId);
+	List<AccountDto> getBlockedResumes(Long userId);
 	
-	boolean checkIfMutedPosts(Long resumeId, Long connectionResumeId);
+	boolean checkIfMutedPosts(Long userId1, Long userId2);
 	
-	boolean checkIfMutedMessages(Long resumeId, Long connectionResumeId);
+	boolean checkIfMutedMessages(Long userId1, Long userId2);
 	
 	boolean checkIfBlocked(Long resumeId, Long connectionResumeId);
+
+	List<ConnectionDto> getUsersConnections(Long userId);
+
+    Long checkIfConnected(Long userId1, Long userId2);
+
 }

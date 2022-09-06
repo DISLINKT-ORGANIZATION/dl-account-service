@@ -59,8 +59,8 @@ public class Account {
 			@JoinColumn(name = "account_id") }, inverseJoinColumns = { @JoinColumn(name = "blocked_account_id") })
 	private List<Account> blockedAccounts;
 
-	@ManyToMany(mappedBy = "blockedAccounts", cascade = CascadeType.ALL)
-	private List<Account> accounts;
+//	@ManyToMany(mappedBy = "blockedAccounts", cascade = CascadeType.ALL)
+//	private List<Account> accounts;
 
 	public Account(Long userId) {
 		this.userId = userId;
