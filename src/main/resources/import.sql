@@ -1462,7 +1462,7 @@ insert into skill_proficiencies (skill_id, proficiency) values (86, 5);
 -- 1 - user with id 4 -> mad-max
 insert into accounts (user_id, mute_message_notifications, mute_post_notifications, public_account, phone_number, biography) values (4, false, false, true, '061123456', 'Maxine "Max" Mayfield, portrayed by Sadie Sink, is a main character in Stranger Things, being introduced in the second season. A newcomer to the Party, and the stepsister of Billy Hargrove, she is close friends with Will Byers, Dustin Henderson, Jane "Eleven" Hopper, Lucas Sinclair and Mike Wheeler; she also has an on-and-off romantic relationship with Lucas.');
 -- 2 - user with id 5 -> bitchin-011
-insert into accounts (user_id, mute_message_notifications, mute_post_notifications, public_account, phone_number, biography) values (5, false, false, true, '061123456', 'Jane "El" Hopper (born Jane Ives) and better known as just Eleven, is a main character in Stranger Things. She is portrayed by Millie Bobby Brown. Eleven was kidnapped as a newborn by Dr. Martin Brenner and raised in Hawkins National Laboratory, where she was experimented on for her inherited psychokinetic abilities.');
+insert into accounts (user_id, mute_message_notifications, mute_post_notifications, public_account, phone_number, biography) values (5, false, false, false, '061123456', 'Jane "El" Hopper (born Jane Ives) and better known as just Eleven, is a main character in Stranger Things. She is portrayed by Millie Bobby Brown. Eleven was kidnapped as a newborn by Dr. Martin Brenner and raised in Hawkins National Laboratory, where she was experimented on for her inherited psychokinetic abilities.');
 -- 3 - user with id 6 -> mike-bike
 insert into accounts (user_id, mute_message_notifications, mute_post_notifications, public_account, phone_number, biography) values (6, false, false, true, '061123456', 'Michael "Mike" Wheeler, portrayed by Finn Wolfhard, is a main character in Stranger Things. The leader of the Party, he is the boyfriend of Eleven, the best friend of Dustin Henderson, Lucas Sinclair, Will Byers, and Max Mayfield, and the younger brother of Nancy Wheeler.');
 -- 4 - user with id 7 -> will-the-wizard
@@ -1474,7 +1474,7 @@ insert into accounts (user_id, mute_message_notifications, mute_post_notificatio
 -- 7 - user with id 10 -> mommy-steve
 insert into accounts (user_id, mute_message_notifications, mute_post_notifications, public_account, phone_number, biography) values (10, false, false, true, '061123456', 'Steve Harrington, portrayed by Joe Keery, is a main character in Stranger Things, having a recurring role in the first season before being promoted to the main cast from the second season onwards. A student at Hawkins High School, he was best friends with Tommy Hagan and Carol Perkins and the boyfriend of Nancy Wheeler. When Nancys best friend, Barbara Holland, disappeared, she became distant and Steve thought she was cheating with Jonathan Byers.');
 -- 8 - user with id 11 -> fancy-nancy
-insert into accounts (user_id, mute_message_notifications, mute_post_notifications, public_account, phone_number, biography) values (11, false, false, true, '061123456', 'Nancy Wheeler, portrayed by Natalia Dyer, is a main character in Stranger Things. Nancy is a young adult and an aspiring journalist, and an ally to "The Party". She is the older sister of Mike Wheeler, the former girlfriend of Steve Harrington, and the current girlfriend of Jonathan Byers. In the fall of 1983, Nancy was a straightforward teenager with a straightforward life, unsure whether to prioritise spending time with her best friend Barbara Holland, or with her new boyfriend, Steve Harrington.');
+insert into accounts (user_id, mute_message_notifications, mute_post_notifications, public_account, phone_number, biography) values (11, false, false, false, '061123456', 'Nancy Wheeler, portrayed by Natalia Dyer, is a main character in Stranger Things. Nancy is a young adult and an aspiring journalist, and an ally to "The Party". She is the older sister of Mike Wheeler, the former girlfriend of Steve Harrington, and the current girlfriend of Jonathan Byers. In the fall of 1983, Nancy was a straightforward teenager with a straightforward life, unsure whether to prioritise spending time with her best friend Barbara Holland, or with her new boyfriend, Steve Harrington.');
 -- 9 - user with id 12 -> erica-america
 insert into accounts (user_id, mute_message_notifications, mute_post_notifications, public_account, phone_number, biography) values (12, false, false, true, '061123456', 'Erica Sinclair, portrayed by Priah Ferguson, is a main character in Stranger Things, being introduced in the second season as a recurring role before being promoted to the main cast from the third season onward. She is the younger sister of Lucas Sinclair. In 1984, she spent the months of October and November tormenting her brother, making fun of his Ghostbusters costume.');
 -- 10 - user with id 13 -> crackin-robin
@@ -1568,3 +1568,33 @@ insert into accounts_working_experience (account_id, working_experience_id) valu
 insert into education (start_date, end_date, school, field, account_id)  values (1633384800000, 1661358879822, 'Faculty of Technical Sciences', 0, 1);
 
 insert into accounts_education (account_id, education_id) values (1, 1);
+
+----------------------- BLOCKED ACCOUNTS -------------------------------
+-- mad max blocks vecna
+insert into accounts_blocked_accounts (account_id, blocked_account_id) values (1, 11);
+
+----------------------- CONNECTIONS -------------------------------
+-- mad max follows el
+-- 1
+insert into connections (followed_account_id, mute_messages, mute_posts) values (2, false, false);
+-- el follows mad max
+-- 2
+insert into connections (followed_account_id, mute_messages, mute_posts) values (1, false, false);
+-- mad max follows lucas
+-- 3
+insert into connections (followed_account_id, mute_messages, mute_posts) values (6, false, false);
+-- lucas follows mad max
+-- 4
+insert into connections (followed_account_id, mute_messages, mute_posts) values (1, false, false);
+
+
+-- ----------------------- FOLLOWED ACCOUNTS -------------------------------
+-- mad max follows el
+insert into accounts_connections (account_id, connection_id) values (1, 1);
+-- mad max follows lucas
+insert into accounts_connections (account_id, connection_id) values (1, 3);
+-- el follows mad max
+insert into accounts_connections (account_id, connection_id) values (2, 2);
+-- lucas follows mad max
+insert into accounts_connections (account_id, connection_id) values (6, 4);
+

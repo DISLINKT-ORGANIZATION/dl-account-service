@@ -11,4 +11,5 @@ import dislinkt.accountservice.entities.Connection;
 public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 
 	Optional<Connection> findById(Long id);
+
 }

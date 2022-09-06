@@ -1,6 +1,8 @@
 package dislinkt.accountservice.services.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,46 +37,34 @@ public class ConnectionServiceImpl implements ConnectionService {
 	@Autowired
 	private AccountDtoMapper resumeMapper;
 
-	@Autowired
-	private AuthenticatedUserService authenticatedUserService;
-
-	public ConnectionDto follow(ConnectionDto connectionDto) {
-		if (checkIfBlocked(connectionDto.getConnectionResumeId(), connectionDto.getResumeId())) {
-			throw new EntityNotFound("User is blocked");
-		}
-		Account account = getResume(connectionDto.getResumeId());
-		Account connectionAccount = getResume(connectionDto.getConnectionResumeId());
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
-		if (connectionAccount.getPublicAccount()) {
-			return createConnection(connectionDto.getResumeId(), connectionDto.getConnectionResumeId());
-		} else {
-			return createConnectionRequest(connectionDto.getResumeId(), connectionDto.getConnectionResumeId());
-		}
-	}
-
-	public List<ConnectionRequestDto> getUsersConnectionRequests(Long resumeId) {
-		Account account = getResume(resumeId);
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
-		List<ConnectionRequest> requests = connectionRequestRepository.findByReceiverId(resumeId);
-		List<ConnectionRequestDto> dtos = requests.stream().map(request -> {
+	public List<ConnectionRequestDto> getUsersConnectionRequests(Long loggedInUserId) {
+		Account acc = getAccountByUserId(loggedInUserId);
+		List<ConnectionRequest> requests = connectionRequestRepository.findByReceiverId(acc.getId());
+		return requests.stream().map(request -> {
 			Account senderAccount = getResume(request.getSenderId());
-			return new ConnectionRequestDto(request.getId(), resumeMapper.toDto(senderAccount));
+			Account receiverAccount = getResume(request.getReceiverId());
+			ConnectionRequestDto dto = new ConnectionRequestDto();
+			dto.setConnectionRequestId(request.getId());
+			dto.setReceiverId(receiverAccount.getUserId());
+			dto.setReceiverAccountId(receiverAccount.getId());
+			dto.setSenderId(senderAccount.getUserId());
+			dto.setSenderAccountId(senderAccount.getId());
+			return dto;
 		}).collect(Collectors.toList());
-		return dtos;
 	}
 
-	public ConnectionDto acceptConnectionRequest(Long connectionRequestId) {
+	public void acceptConnectionRequest(Long  connectionRequestId) {
 		Optional<ConnectionRequest> connectionRequestOptional = connectionRequestRepository
 				.findById(connectionRequestId);
 		if (!connectionRequestOptional.isPresent()) {
 			throw new EntityNotFound("Connection request does not exist.");
 		}
 		ConnectionRequest connectionRequest = connectionRequestOptional.get();
-		Account account = getResume(connectionRequest.getReceiverId());
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
 		connectionRequest.setAccepted(true);
 		connectionRequestRepository.save(connectionRequest);
-		return createConnection(connectionRequest.getSenderId(), connectionRequest.getReceiverId());
+		Account account1 = getResume(connectionRequest.getSenderId());
+		Account account2 = getResume(connectionRequest.getReceiverId());
+		createConnection(account1, account2);
 	}
 
 	public ConnectionDto declineConnectionRequest(Long connectionRequestId) {
@@ -84,92 +74,117 @@ public class ConnectionServiceImpl implements ConnectionService {
 			throw new EntityNotFound("Connection request does not exist.");
 		}
 		ConnectionRequest connectionRequest = connectionRequestOptional.get();
-		Account account = getResume(connectionRequest.getReceiverId());
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
 		connectionRequestRepository.delete(connectionRequest);
 		return new ConnectionDto(connectionRequest.getSenderId(), connectionRequest.getReceiverId());
 	}
 
-	public void unfollow(ConnectionDto connectionDto) {
-		Account account = getResume(connectionDto.getResumeId());
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
-		Optional<Connection> connectionOptional = account.getConnections().stream()
-				.filter(item -> item.getFollowedAccountId() == connectionDto.getConnectionResumeId()).findFirst();
-		if (!connectionOptional.isPresent()) {
-			throw new EntityNotFound("Connection does not exist.");
+	public boolean follow(Long currentUserId, Long userId) {
+		Account loggedInAccount = getAccountByUserId(currentUserId);
+		Account accountToFollow = getAccountByUserId(userId);
+
+		if (accountToFollow.getPublicAccount()) {
+			createConnection(loggedInAccount, accountToFollow);
+			return true;
+		} else {
+			createConnectionRequest(loggedInAccount, accountToFollow);
+			return false;
 		}
-		Connection connection = connectionOptional.get();
-		account.getConnections().remove(connection);
-		accountRepository.save(account);
-		connectionRepository.delete(connection);
 	}
 
-	public void changeMuteMessages(ConnectionDto connectionDto) {
-		Account account = getResume(connectionDto.getResumeId());
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
-		Optional<Connection> connectionOptional = account.getConnections().stream()
-				.filter(item -> item.getFollowedAccountId() == connectionDto.getConnectionResumeId()).findFirst();
+	public void unfollow(Long currentUserId, Long userId) {
+		Account loggedInAccount = getAccountByUserId(currentUserId);
+		Account accountToUnfollow = getAccountByUserId(userId);
+
+		Connection connection = getConnection(loggedInAccount, accountToUnfollow);
+		Connection connectionReverse = getConnection(accountToUnfollow, loggedInAccount);
+
+		loggedInAccount.getConnections().remove(connection);
+		accountToUnfollow.getConnections().remove(connectionReverse);
+
+		accountRepository.save(loggedInAccount);
+		accountRepository.save(accountToUnfollow);
+	}
+
+	private Account getAccountByUserId(Long currentUserId) {
+		Account loggedInAccount = this.accountRepository.findByUserId(currentUserId);
+		if (Objects.isNull(loggedInAccount)) {
+			throw new EntityNotFound("Account does not exist");
+		}
+		return loggedInAccount;
+	}
+
+	private Connection getConnection(Account loggedInAccount, Account accountToUnfollow) {
+		Optional<Connection> connectionOptional = loggedInAccount.getConnections().stream()
+				.filter(item -> Objects.equals(item.getFollowedAccountId(), accountToUnfollow.getId())).findFirst();
 		if (!connectionOptional.isPresent()) {
 			throw new EntityNotFound("Connection does not exist.");
 		}
-		Connection connection = connectionOptional.get();
-		connection.setMuteMessages(!connection.getMuteMessages());
+		return connectionOptional.get();
+	}
+
+	public boolean changeMuteMessages(Long userId1, Long userId2) {
+		Connection connection = checkConnection(userId1, userId2);
+		boolean newValue = !connection.getMuteMessages();
+		connection.setMuteMessages(newValue);
 		connectionRepository.save(connection);
+		return newValue;
 	}
 
-	public void changeMutePosts(ConnectionDto connectionDto) {
-		Account account = getResume(connectionDto.getResumeId());
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
-		Optional<Connection> connectionOptional = account.getConnections().stream()
-				.filter(item -> item.getId() == connectionDto.getConnectionResumeId()).findFirst();
-		if (!connectionOptional.isPresent()) {
-			throw new EntityNotFound("Connection does not exist.");
-		}
-		Connection connection = connectionOptional.get();
-		connection.setMutePosts(!connection.getMutePosts());
+	public boolean changeMutePosts(Long userId1, Long userId2) {
+		Connection connection = checkConnection(userId1, userId2);
+		boolean newValue = !connection.getMutePosts();
+		connection.setMutePosts(newValue);
 		connectionRepository.save(connection);
+		return newValue;
 	}
 
-	public void block(ConnectionDto connectionDto) {
-		Account account = getResume(connectionDto.getResumeId());
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
-		Account connectionAccount = getResume(connectionDto.getConnectionResumeId());
-		account.getBlockedAccounts().add(connectionAccount);
-		accountRepository.save(account);
+	public void block(Long loggedUserId, Long blockedUserId) {
+		Account loggedInUserAccount = getAccountByUserId(loggedUserId);
+		Account blockedInUserAccount = getAccountByUserId(blockedUserId);
+		loggedInUserAccount.getBlockedAccounts().add(blockedInUserAccount);
+		try {
+			Connection connection = checkConnection(loggedUserId, blockedUserId);
+			loggedInUserAccount.getConnections().remove(connection);
+			connection = checkConnection(blockedUserId, loggedUserId);
+			blockedInUserAccount.getConnections().remove(connection);
+			accountRepository.save(blockedInUserAccount);
+		} catch (Exception e) {
+			System.out.println("Nice.");
+		}
+		accountRepository.save(loggedInUserAccount);
 	}
 
-	public void unblock(ConnectionDto connectionDto) {
-		Account account = getResume(connectionDto.getResumeId());
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
-		Account connectionAccount = getResume(connectionDto.getConnectionResumeId());
-		account.getBlockedAccounts().remove(connectionAccount);
-		accountRepository.save(account);
+	public void unblock(Long loggedUserId, Long blockedUserId) {
+		Account loggedInUserAccount = getAccountByUserId(loggedUserId);
+		Account blockedInUserAccount = getAccountByUserId(blockedUserId);
+		loggedInUserAccount.getBlockedAccounts().remove(blockedInUserAccount);
+		accountRepository.save(loggedInUserAccount);
 	}
 
-	public List<AccountDto> getBlockedResumes(Long resumeId) {
-		Account account = getResume(resumeId);
-		authenticatedUserService.checkAuthenticatedUser(account.getUserId());
+	public List<AccountDto> getBlockedResumes(Long userId) {
+		Account account = getAccountByUserId(userId);
 		return account.getBlockedAccounts().stream().map(item -> resumeMapper.toDto(item)).collect(Collectors.toList());
 	}
 
-	public boolean checkIfMutedPosts(Long resumeId, Long connectionResumeId) {
-		Account account = getResume(resumeId);
-		Optional<Connection> connection = account.getConnections().stream()
-				.filter(item -> item.getFollowedAccountId() == connectionResumeId).findFirst();
-		if (!connection.isPresent()) {
-			throw new EntityNotFound("Connection does not exist.");
-		}
-		return connection.get().getMutePosts();
+	public boolean checkIfMutedPosts(Long userId1, Long userId2) {
+		Connection connection = checkConnection(userId1, userId2);
+		return connection.getMutePosts();
 	}
 
-	public boolean checkIfMutedMessages(Long resumeId, Long connectionResumeId) {
-		Account account = getResume(resumeId);
-		Optional<Connection> connection = account.getConnections().stream()
-				.filter(item -> item.getFollowedAccountId() == connectionResumeId).findFirst();
+	public boolean checkIfMutedMessages(Long userId1, Long userId2) {
+		Connection connection = checkConnection(userId1, userId2);
+		return connection.getMuteMessages();
+	}
+
+	private Connection checkConnection(Long userId1, Long userId2) {
+		Account account1 = getAccountByUserId(userId1);
+		Account account2 = getAccountByUserId(userId2);
+		Optional<Connection> connection = account1.getConnections().stream()
+				.filter(item -> item.getFollowedAccountId().equals(account2.getId())).findFirst();
 		if (!connection.isPresent()) {
 			throw new EntityNotFound("Connection does not exist.");
 		}
-		return connection.get().getMuteMessages();
+		return connection.get();
 	}
 
 	public boolean checkIfBlocked(Long resumeId, Long connectionResumeId) {
@@ -182,26 +197,64 @@ public class ConnectionServiceImpl implements ConnectionService {
 		return false;
 	}
 
-	private ConnectionDto createConnectionRequest(Long resumeId, Long connectionResumeId) {
-		ConnectionRequest newConnectionRequest = new ConnectionRequest(resumeId, connectionResumeId, false);
-		List<ConnectionRequest> requestExists = connectionRequestRepository.findBySenderAndReceiver(resumeId,
-				connectionResumeId);
+	@Override
+	public List<ConnectionDto> getUsersConnections(Long userId) {
+		Account account = getAccountByUserId(userId);
+		List<Connection> connections = account.getConnections();
+		List<ConnectionDto> connectionsDto = new ArrayList<>();
+		for (Connection conn : connections) {
+			ConnectionDto dto = new ConnectionDto(account.getId(), conn.getFollowedAccountId());
+			Optional<Account> followedAcc = this.accountRepository.findById(conn.getFollowedAccountId());
+			if (!followedAcc.isPresent()) {
+				throw new EntityNotFound("Followed account does not exist.");
+			}
+			dto.setUserConnectionId(followedAcc.get().getUserId());
+			connectionsDto.add(dto);
+		}
+		return connectionsDto;
+	}
+
+	@Override
+	public Long checkIfConnected(Long userId1, Long userId2) {
+		// 0 - not followed, 1 - followed, 2 - pending request
+		// lazy developer, no enums
+		Account acc1 = getAccountByUserId(userId1);
+		Account acc2 = getAccountByUserId(userId2);
+		List<Connection> connections = acc1.getConnections();
+		for (Connection conn: connections) {
+			if (conn.getFollowedAccountId().equals(acc2.getId())) {
+				return 1L;
+			}
+		}
+		List<ConnectionRequest> requestExists = connectionRequestRepository.findBySenderAndReceiver(acc1.getId(),
+				acc2.getId());
+		if (requestExists.size() != 0) {
+			return 2L;
+		}
+		return 0L;
+	}
+
+
+	private void createConnectionRequest(Account loggedInAccount, Account accountToFollow) {
+		ConnectionRequest newConnectionRequest = new ConnectionRequest(loggedInAccount.getId(), accountToFollow.getId(), false);
+		List<ConnectionRequest> requestExists = connectionRequestRepository.findBySenderAndReceiver(loggedInAccount.getId(),
+				accountToFollow.getId());
 		if (requestExists.size() == 0) {
 			connectionRequestRepository.save(newConnectionRequest);
 		}
-		return new ConnectionDto(resumeId, connectionResumeId);
 	}
 
-	private ConnectionDto createConnection(Long resumeId, Long connectionResumeId) {
-		Account account = getResume(resumeId);
-		Long connectionExists = account.getConnections().stream()
-				.filter(connection -> connection.getFollowedAccountId() == connectionResumeId).count();
+	private void createConnection(Account loggedInAccount, Account accountToFollow) {
+		long connectionExists = loggedInAccount.getConnections().stream()
+				.filter(connection -> Objects.equals(connection.getFollowedAccountId(), accountToFollow.getId())).count();
 		if (connectionExists == 0) {
-			Connection newConnection = new Connection(connectionResumeId, false, false);
-			account.getConnections().add(newConnection);
-			accountRepository.save(account);
+			Connection newConnection = new Connection(accountToFollow.getId(), false, false);
+			loggedInAccount.getConnections().add(newConnection);
+			accountRepository.save(loggedInAccount);
+			Connection reverseConnection = new Connection(loggedInAccount.getId(), false, false);
+			accountToFollow.getConnections().add(reverseConnection);
+			accountRepository.save(accountToFollow);
 		}
-		return new ConnectionDto(resumeId, connectionResumeId);
 	}
 
 	private Account getResume(Long resumeId) {
@@ -212,4 +265,5 @@ public class ConnectionServiceImpl implements ConnectionService {
 		Account account = resumeOptional.get();
 		return account;
 	}
+
 }

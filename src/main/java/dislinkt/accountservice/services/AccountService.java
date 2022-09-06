@@ -1,8 +1,11 @@
 package dislinkt.accountservice.services;
 
 import dislinkt.accountservice.dtos.BiographyDto;
+import dislinkt.accountservice.dtos.FilterAccountsDto;
 import dislinkt.accountservice.dtos.PhoneNumberDto;
 import dislinkt.accountservice.dtos.AccountDto;
+
+import java.util.List;
 
 public interface AccountService {
 
@@ -17,4 +20,6 @@ public interface AccountService {
 	AccountDto changeAccountPrivacy(Long accountId);
 	
 	AccountDto changeConnectionNotifications(Long accountId);
+
+	List<Long> filterUserIds(FilterAccountsDto accountDto);
 }
