@@ -29,9 +29,11 @@ import java.util.List;
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private TokenUtils tokenUtils;
+    private String authServiceAddress;
 
-    public TokenAuthenticationFilter(TokenUtils tokenHelper) {
+    public TokenAuthenticationFilter(TokenUtils tokenHelper, String authServiceAddress) {
         this.tokenUtils = tokenHelper;
+        this.authServiceAddress = authServiceAddress;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             Claims claims = tokenUtils.getAllClaimsFromToken(authToken);
             if (username != null) {
                 RestTemplate restTemplate = new RestTemplate();
-                String fooResourceUrl = "http://localhost:8081/auth-service/authentication/users/check-username/" + username;
+                String fooResourceUrl = authServiceAddress + "/authentication/users/check-username/" + username;
                 ResponseEntity<Boolean> restTemplateResponse = restTemplate.getForEntity(fooResourceUrl, Boolean.class);
                 if (!restTemplateResponse.getBody()) {
                     throw new InvalidToken("Username not found on authentication service.");
