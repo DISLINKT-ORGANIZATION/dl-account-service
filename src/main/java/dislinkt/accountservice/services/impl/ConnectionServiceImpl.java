@@ -1,12 +1,14 @@
 package dislinkt.accountservice.services.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import dislinkt.accountservice.dtos.ConnectionDto;
@@ -17,10 +19,12 @@ import dislinkt.accountservice.entities.ConnectionRequest;
 import dislinkt.accountservice.entities.Account;
 import dislinkt.accountservice.exceptions.EntityNotFound;
 import dislinkt.accountservice.mappers.AccountDtoMapper;
+import dislinkt.accountservice.model.EventKafka;
 import dislinkt.accountservice.repositories.ConnectionRepository;
 import dislinkt.accountservice.repositories.ConnectionRequestRepository;
 import dislinkt.accountservice.repositories.AccountRepository;
 import dislinkt.accountservice.services.ConnectionService;
+import dislinkt.accountservice.model.EventType;
 
 @Service
 public class ConnectionServiceImpl implements ConnectionService {
@@ -36,6 +40,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	@Autowired
 	private AccountDtoMapper resumeMapper;
+
+	@Autowired
+	private KafkaTemplate<String, EventKafka> eventKafkaTemplate;
 
 	public List<ConnectionRequestDto> getUsersConnectionRequests(Long loggedInUserId) {
 		Account acc = getAccountByUserId(loggedInUserId);
@@ -53,7 +60,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}).collect(Collectors.toList());
 	}
 
-	public void acceptConnectionRequest(Long  connectionRequestId) {
+	public void acceptConnectionRequest(Long connectionRequestId) {
 		Optional<ConnectionRequest> connectionRequestOptional = connectionRequestRepository
 				.findById(connectionRequestId);
 		if (!connectionRequestOptional.isPresent()) {
@@ -64,6 +71,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 		connectionRequestRepository.save(connectionRequest);
 		Account account1 = getResume(connectionRequest.getSenderId());
 		Account account2 = getResume(connectionRequest.getReceiverId());
+		EventKafka event = new EventKafka(new Date(), "User with id  " + account2.getId()
+				+ " accepted follow request from user with id " + account1.getId() + ".",
+				EventType.ACCEPTED_FLLOW_REQUEST);
+		eventKafkaTemplate.send("dislinkt-events", event);
 		createConnection(account1, account2);
 	}
 
@@ -84,9 +95,16 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 		if (accountToFollow.getPublicAccount()) {
 			createConnection(loggedInAccount, accountToFollow);
+			EventKafka event = new EventKafka(new Date(),
+					"User with id  " + currentUserId + " followed user with id " + userId + ".", EventType.FOLLOWED);
+			eventKafkaTemplate.send("dislinkt-events", event);
 			return true;
 		} else {
 			createConnectionRequest(loggedInAccount, accountToFollow);
+			EventKafka event = new EventKafka(new Date(),
+					"User with id  " + currentUserId + " sent follow request to user with id " + userId,
+					EventType.SENT_FOLLOW_REQUEST);
+			eventKafkaTemplate.send("dislinkt-events", event);
 			return false;
 		}
 	}
@@ -103,6 +121,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 		accountRepository.save(loggedInAccount);
 		accountRepository.save(accountToUnfollow);
+		EventKafka event = new EventKafka(new Date(),
+				"User with id  " + currentUserId + " unfollowed user with id " + userId + ".", EventType.UNFOLLOWED);
+		eventKafkaTemplate.send("dislinkt-events", event);
 	}
 
 	private Account getAccountByUserId(Long currentUserId) {
@@ -152,6 +173,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 			System.out.println("Nice.");
 		}
 		accountRepository.save(loggedInUserAccount);
+		EventKafka event = new EventKafka(new Date(),
+				"User with id  " + loggedUserId + " blocked user with id " + blockedUserId + ".", EventType.UNFOLLOWED);
+		eventKafkaTemplate.send("dislinkt-events", event);
 	}
 
 	public void unblock(Long loggedUserId, Long blockedUserId) {
@@ -159,6 +183,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 		Account blockedInUserAccount = getAccountByUserId(blockedUserId);
 		loggedInUserAccount.getBlockedAccounts().remove(blockedInUserAccount);
 		accountRepository.save(loggedInUserAccount);
+		EventKafka event = new EventKafka(new Date(),
+				"User with id  " + loggedUserId + " unblocked user with id " + blockedUserId, EventType.UNFOLLOWED);
+		eventKafkaTemplate.send("dislinkt-events", event);
 	}
 
 	public List<AccountDto> getBlockedResumes(Long userId) {
@@ -221,7 +248,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		Account acc1 = getAccountByUserId(userId1);
 		Account acc2 = getAccountByUserId(userId2);
 		List<Connection> connections = acc1.getConnections();
-		for (Connection conn: connections) {
+		for (Connection conn : connections) {
 			if (conn.getFollowedAccountId().equals(acc2.getId())) {
 				return 1L;
 			}
@@ -234,11 +261,11 @@ public class ConnectionServiceImpl implements ConnectionService {
 		return 0L;
 	}
 
-
 	private void createConnectionRequest(Account loggedInAccount, Account accountToFollow) {
-		ConnectionRequest newConnectionRequest = new ConnectionRequest(loggedInAccount.getId(), accountToFollow.getId(), false);
-		List<ConnectionRequest> requestExists = connectionRequestRepository.findBySenderAndReceiver(loggedInAccount.getId(),
-				accountToFollow.getId());
+		ConnectionRequest newConnectionRequest = new ConnectionRequest(loggedInAccount.getId(), accountToFollow.getId(),
+				false);
+		List<ConnectionRequest> requestExists = connectionRequestRepository
+				.findBySenderAndReceiver(loggedInAccount.getId(), accountToFollow.getId());
 		if (requestExists.size() == 0) {
 			connectionRequestRepository.save(newConnectionRequest);
 		}
@@ -246,7 +273,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	private void createConnection(Account loggedInAccount, Account accountToFollow) {
 		long connectionExists = loggedInAccount.getConnections().stream()
-				.filter(connection -> Objects.equals(connection.getFollowedAccountId(), accountToFollow.getId())).count();
+				.filter(connection -> Objects.equals(connection.getFollowedAccountId(), accountToFollow.getId()))
+				.count();
 		if (connectionExists == 0) {
 			Connection newConnection = new Connection(accountToFollow.getId(), false, false);
 			loggedInAccount.getConnections().add(newConnection);
