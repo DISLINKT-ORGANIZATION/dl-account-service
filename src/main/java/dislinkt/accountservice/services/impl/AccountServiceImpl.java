@@ -65,14 +65,13 @@ public class AccountServiceImpl implements AccountService {
 		return resumeMapper.toDto(account);
 	}
 	
-	public AccountDto changeAccountPrivacy(Long resumeId) {
-		Optional<Account> resumeOptional = accountRepository.findById(resumeId);
-		if (!resumeOptional.isPresent()) {
-			throw new EntityNotFound("Resume not found.");
+	public AccountDto changeAccountPrivacy(Long userId) {
+		Account account = accountRepository.findByUserId(userId);
+		if (Objects.isNull(account)) {
+			throw new EntityNotFound("Account not found.");
 		}
-		Account account = resumeOptional.get();
 		account.setPublicAccount(!account.getPublicAccount());
-		accountRepository.save(account);
+		account = accountRepository.save(account);
 		return resumeMapper.toDto(account);
 	}
 	
