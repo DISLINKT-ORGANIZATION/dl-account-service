@@ -10,6 +10,8 @@ public class ConnectionDto {
 	private Long accountId;
 	private Long accountConnectionId;
 	private Long userConnectionId;
+	private boolean mutePosts;
+	private boolean muteMessages;
 
 	public ConnectionDto(Long accountId, Long accountConnectionId) {
 		this.accountId = accountId;
