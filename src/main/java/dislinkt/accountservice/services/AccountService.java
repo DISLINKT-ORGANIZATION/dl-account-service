@@ -17,7 +17,7 @@ public interface AccountService {
 	
 	AccountDto updateBiography(BiographyDto biographyDto, Long userId);
 
-	AccountDto changeAccountPrivacy(Long accountId);
+	AccountDto changeAccountPrivacy(Long userId);
 	
 	AccountDto changeConnectionNotifications(Long accountId);
 

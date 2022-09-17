@@ -40,9 +40,9 @@ public class AccountController {
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
-	@PutMapping("/privacy/{accountId}")
-	public ResponseEntity<?> changeAccountPrivacy(@PathVariable Long accountId) {
-		AccountDto accountDto = accountService.changeAccountPrivacy(accountId);
+	@PutMapping("/privacy/{userId}")
+	public ResponseEntity<?> changeAccountPrivacy(@PathVariable Long userId) {
+		AccountDto accountDto = accountService.changeAccountPrivacy(userId);
 		return ResponseEntity.ok(accountDto);
 	}
 
