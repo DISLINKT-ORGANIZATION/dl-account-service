@@ -7,13 +7,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import dislinkt.accountservice.dtos.*;
+import dislinkt.accountservice.entities.FollowNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import dislinkt.accountservice.dtos.ConnectionDto;
-import dislinkt.accountservice.dtos.ConnectionRequestDto;
-import dislinkt.accountservice.dtos.AccountDto;
 import dislinkt.accountservice.entities.Connection;
 import dislinkt.accountservice.entities.ConnectionRequest;
 import dislinkt.accountservice.entities.Account;
@@ -44,6 +43,11 @@ public class ConnectionServiceImpl implements ConnectionService {
 	@Autowired
 	private KafkaTemplate<String, EventKafka> eventKafkaTemplate;
 
+	@Autowired
+	private KafkaTemplate<String, KafkaNotification> notificationKafkaTemplate;
+
+
+
 	public List<ConnectionRequestDto> getUsersConnectionRequests(Long loggedInUserId) {
 		Account acc = getAccountByUserId(loggedInUserId);
 		List<ConnectionRequest> requests = connectionRequestRepository.findByReceiverId(acc.getId());
@@ -71,10 +75,14 @@ public class ConnectionServiceImpl implements ConnectionService {
 		connectionRequestRepository.save(connectionRequest);
 		Account account1 = getResume(connectionRequest.getSenderId());
 		Account account2 = getResume(connectionRequest.getReceiverId());
-		EventKafka event = new EventKafka(new Date(), "User with id  " + account2.getId()
-				+ " accepted follow request from user with id " + account1.getId() + ".",
+		Date today = new Date();
+		EventKafka event = new EventKafka(today, "User with id  " + account2.getUserId()
+				+ " accepted follow request from user with id " + account1.getUserId() + ".",
 				EventType.ACCEPTED_FLLOW_REQUEST);
 		eventKafkaTemplate.send("dislinkt-events", event);
+		FollowNotification notification = new FollowNotification(account2.getUserId(), account1.getUserId(), today.getTime());
+		KafkaNotification followNotification = new KafkaNotification(notification, KafkaNotificationType.NEW_CONNECTION);
+		notificationKafkaTemplate.send("dislinkt-user-notifications", followNotification);
 		createConnection(account1, account2);
 	}
 
@@ -92,19 +100,25 @@ public class ConnectionServiceImpl implements ConnectionService {
 	public boolean follow(Long currentUserId, Long userId) {
 		Account loggedInAccount = getAccountByUserId(currentUserId);
 		Account accountToFollow = getAccountByUserId(userId);
-
+		Date today = new Date();
 		if (accountToFollow.getPublicAccount()) {
 			createConnection(loggedInAccount, accountToFollow);
-			EventKafka event = new EventKafka(new Date(),
+			EventKafka event = new EventKafka(today,
 					"User with id  " + currentUserId + " followed user with id " + userId + ".", EventType.FOLLOWED);
 			eventKafkaTemplate.send("dislinkt-events", event);
+			FollowNotification notification = new FollowNotification(currentUserId, userId, today.getTime());
+			KafkaNotification followNotification = new KafkaNotification(notification, KafkaNotificationType.NEW_CONNECTION);
+			notificationKafkaTemplate.send("dislinkt-user-notifications", followNotification);
 			return true;
 		} else {
 			createConnectionRequest(loggedInAccount, accountToFollow);
-			EventKafka event = new EventKafka(new Date(),
+			EventKafka event = new EventKafka(today,
 					"User with id  " + currentUserId + " sent follow request to user with id " + userId,
 					EventType.SENT_FOLLOW_REQUEST);
 			eventKafkaTemplate.send("dislinkt-events", event);
+			FollowNotification notification = new FollowNotification(currentUserId, userId, today.getTime());
+			KafkaNotification followNotification = new KafkaNotification(notification, KafkaNotificationType.CONNECTION_REQUEST);
+			notificationKafkaTemplate.send("dislinkt-user-notifications", followNotification);
 			return false;
 		}
 	}
