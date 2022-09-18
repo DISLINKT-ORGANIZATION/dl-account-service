@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -102,6 +103,12 @@ public class AccountServiceImpl implements AccountService {
 			filteredIds.add(id);
 		}
 		return filteredIds;
+	}
+
+	@Override
+	public List<Long> filterPublicUserIds(FilterAccountsDto accountDto) {
+		List<Account> allAccounts = this.accountRepository.findAllByUserIdInAndPublicAccount(accountDto.getUsersIds(), true);
+		return allAccounts.stream().map(Account::getUserId).collect(Collectors.toList());
 	}
 
 	private boolean isInBlockList(Account loggedInAccount, Account currentAccount) {
