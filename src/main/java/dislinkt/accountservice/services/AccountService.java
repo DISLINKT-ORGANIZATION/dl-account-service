@@ -22,4 +22,6 @@ public interface AccountService {
 	AccountDto changeConnectionNotifications(Long accountId);
 
 	List<Long> filterUserIds(FilterAccountsDto accountDto);
+
+    List<Long> filterPublicUserIds(FilterAccountsDto accountDto);
 }
