@@ -48,7 +48,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
-                .authorizeRequests().anyRequest().authenticated().and()
+                .authorizeRequests().antMatchers("/actuator/**").permitAll().anyRequest().authenticated().and()
                 .addFilterBefore(new TokenAuthenticationFilter(tokenUtils, authServiceAddress), BasicAuthenticationFilter.class);
 //			.cors().configurationSource(request -> config)
         http.csrf().disable();
