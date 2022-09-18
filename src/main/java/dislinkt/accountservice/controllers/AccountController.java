@@ -55,9 +55,14 @@ public class AccountController {
 
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@PostMapping("/search")
-	public ResponseEntity<?> changeConnectionNotifications(@RequestBody FilterAccountsDto accountDto) {
+	public ResponseEntity<?> searchConnections(@RequestBody FilterAccountsDto accountDto) {
 		List<Long> filteredUserIds = accountService.filterUserIds(accountDto);
 		return ResponseEntity.ok(filteredUserIds);
 	}
 
+	@PostMapping("/public-search")
+	public ResponseEntity<?> publicSearchConnections(@RequestBody FilterAccountsDto accountDto) {
+		List<Long> filteredUserIds = accountService.filterPublicUserIds(accountDto);
+		return ResponseEntity.ok(filteredUserIds);
+	}
 }
